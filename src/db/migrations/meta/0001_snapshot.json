@@ -1,0 +1,394 @@
+{
+  "id": "3b854ac2-6179-460a-b98c-361b3492590c",
+  "prevId": "d2b30b9d-1d88-430f-a7b1-6c7a615ac8c2",
+  "version": "6",
+  "dialect": "sqlite",
+  "tables": {
+    "horarios": {
+      "name": "horarios",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "remedio_id": {
+          "name": "remedio_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "hora_minuto": {
+          "name": "hora_minuto",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "ordem": {
+          "name": "ordem",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(datetime('now'))"
+        }
+      },
+      "indexes": {
+        "idx_horarios_remedio": {
+          "name": "idx_horarios_remedio",
+          "columns": [
+            "remedio_id"
+          ],
+          "isUnique": false
+        },
+        "idx_horarios_hora": {
+          "name": "idx_horarios_hora",
+          "columns": [
+            "hora_minuto"
+          ],
+          "isUnique": false
+        },
+        "uq_horarios_remedio_hora": {
+          "name": "uq_horarios_remedio_hora",
+          "columns": [
+            "remedio_id",
+            "hora_minuto"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "horarios_remedio_id_remedios_id_fk": {
+          "name": "horarios_remedio_id_remedios_id_fk",
+          "tableFrom": "horarios",
+          "columnsFrom": [
+            "remedio_id"
+          ],
+          "tableTo": "remedios",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_horarios_formato": {
+          "name": "ck_horarios_formato",
+          "value": "\"horarios\".\"hora_minuto\" GLOB '[0-2][0-9]:[0-5][0-9]'"
+        }
+      }
+    },
+    "notificacoes_agendadas": {
+      "name": "notificacoes_agendadas",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "horario_id": {
+          "name": "horario_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "identificador_ios": {
+          "name": "identificador_ios",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "disparo_em": {
+          "name": "disparo_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(datetime('now'))"
+        }
+      },
+      "indexes": {
+        "idx_notificacoes_horario": {
+          "name": "idx_notificacoes_horario",
+          "columns": [
+            "horario_id"
+          ],
+          "isUnique": false
+        },
+        "idx_notificacoes_disparo": {
+          "name": "idx_notificacoes_disparo",
+          "columns": [
+            "disparo_em"
+          ],
+          "isUnique": false
+        },
+        "uq_notificacoes_identificador": {
+          "name": "uq_notificacoes_identificador",
+          "columns": [
+            "identificador_ios"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "notificacoes_agendadas_horario_id_horarios_id_fk": {
+          "name": "notificacoes_agendadas_horario_id_horarios_id_fk",
+          "tableFrom": "notificacoes_agendadas",
+          "columnsFrom": [
+            "horario_id"
+          ],
+          "tableTo": "horarios",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "preferencias": {
+      "name": "preferencias",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "escala_fonte": {
+          "name": "escala_fonte",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'grande'"
+        },
+        "som_lembrete": {
+          "name": "som_lembrete",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "onboarding_concluido_em": {
+          "name": "onboarding_concluido_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "atualizado_em": {
+          "name": "atualizado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(datetime('now'))"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_preferencias_linha_unica": {
+          "name": "ck_preferencias_linha_unica",
+          "value": "\"preferencias\".\"id\" = 1"
+        },
+        "ck_preferencias_escala": {
+          "name": "ck_preferencias_escala",
+          "value": "\"preferencias\".\"escala_fonte\" IN ('grande', 'gigante')"
+        },
+        "ck_preferencias_som": {
+          "name": "ck_preferencias_som",
+          "value": "\"preferencias\".\"som_lembrete\" IN (0, 1)"
+        }
+      }
+    },
+    "remedios": {
+      "name": "remedios",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "nome": {
+          "name": "nome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "dose": {
+          "name": "dose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "forma": {
+          "name": "forma",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'comprimido'"
+        },
+        "frequencia": {
+          "name": "frequencia",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'diario'"
+        },
+        "intervalo_dias": {
+          "name": "intervalo_dias",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "dias_semana": {
+          "name": "dias_semana",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "observacao": {
+          "name": "observacao",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "lembrete_ativo": {
+          "name": "lembrete_ativo",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 1
+        },
+        "cor": {
+          "name": "cor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "arquivado_em": {
+          "name": "arquivado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "criado_em": {
+          "name": "criado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(datetime('now'))"
+        },
+        "atualizado_em": {
+          "name": "atualizado_em",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(datetime('now'))"
+        }
+      },
+      "indexes": {
+        "idx_remedios_ativos": {
+          "name": "idx_remedios_ativos",
+          "columns": [
+            "arquivado_em"
+          ],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "ck_remedios_nome_nao_vazio": {
+          "name": "ck_remedios_nome_nao_vazio",
+          "value": "length(trim(\"remedios\".\"nome\")) BETWEEN 1 AND 60"
+        },
+        "ck_remedios_forma": {
+          "name": "ck_remedios_forma",
+          "value": "\"remedios\".\"forma\" IN ('comprimido', 'capsula', 'gotas', 'xarope', 'injecao', 'pomada', 'spray', 'outro')"
+        },
+        "ck_remedios_frequencia": {
+          "name": "ck_remedios_frequencia",
+          "value": "\"remedios\".\"frequencia\" IN ('diario', 'dias_semana', 'intervalo_dias', 'quando_precisar')"
+        },
+        "ck_remedios_cor": {
+          "name": "ck_remedios_cor",
+          "value": "\"remedios\".\"cor\" IN ('coral', 'azul', 'verde', 'amarelo', 'lilas', 'pessego')"
+        },
+        "ck_remedios_intervalo_coerente": {
+          "name": "ck_remedios_intervalo_coerente",
+          "value": "(\"remedios\".\"frequencia\" = 'intervalo_dias' AND \"remedios\".\"intervalo_dias\" BETWEEN 2 AND 30) OR (\"remedios\".\"frequencia\" <> 'intervalo_dias' AND \"remedios\".\"intervalo_dias\" IS NULL)"
+        },
+        "ck_remedios_dias_semana_coerente": {
+          "name": "ck_remedios_dias_semana_coerente",
+          "value": "(\"remedios\".\"frequencia\" = 'dias_semana' AND \"remedios\".\"dias_semana\" GLOB '[1-7]*' AND length(\"remedios\".\"dias_semana\") BETWEEN 1 AND 7) OR (\"remedios\".\"frequencia\" <> 'dias_semana' AND \"remedios\".\"dias_semana\" IS NULL)"
+        },
+        "ck_remedios_lembrete_ativo": {
+          "name": "ck_remedios_lembrete_ativo",
+          "value": "\"remedios\".\"lembrete_ativo\" IN (0, 1)"
+        }
+      }
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
