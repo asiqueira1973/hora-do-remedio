@@ -1,8 +1,9 @@
-import { asc, isNull } from 'drizzle-orm';
+import { asc, desc, eq, isNull } from 'drizzle-orm';
 
 import { db } from '../db/client';
 import * as schema from '../db/schema';
-import type { Cor, Forma, Frequencia, Horario, RemedioComHorarios } from '../types/domain';
+import { ORDEM_RODIZIO_CORES } from '../theme/colors';
+import type { Cor, Forma, Frequencia, Horario, NovoRemedio, RemedioComHorarios } from '../types/domain';
 
 /**
  * Traduz uma linha crua do banco (mais seus horários) para o tipo de
@@ -65,6 +66,71 @@ export const repositorioRemedios = {
   async listarAtivos(): Promise<RemedioComHorarios[]> {
     const linhas = await this.queryAtivos();
     return linhas.map(paraDominio);
+  },
+
+  /**
+   * Insere um remédio novo e seus horários numa transação só (13-A.1):
+   * falha em qualquer parte desfaz tudo.
+   *
+   * Recebe: `NovoRemedio` (dados do formulário 8.2).
+   * Devolve: o remédio criado, com horários.
+   *
+   * Implementa o critério de aceite de 8.2: preencher só o nome e salvar
+   * cria um remédio com os defaults (diario/comprimido/08:00/lembrete
+   * ligado). Não agenda notificação — quem orquestra isso é a tela,
+   * chamando o serviço de lembretes depois (13-A.2, a partir de 8.4).
+   */
+  async criar(dados: NovoRemedio): Promise<RemedioComHorarios> {
+    return db.transaction((tx) => {
+      const remedioInserido = tx
+        .insert(schema.remedios)
+        .values({
+          nome: dados.nome,
+          dose: dados.dose,
+          forma: dados.forma,
+          frequencia: dados.frequencia,
+          intervaloDias: dados.intervaloDias,
+          diasSemana: dados.diasSemana,
+          observacao: dados.observacao,
+          lembreteAtivo: dados.lembreteAtivo ? 1 : 0,
+          cor: dados.cor,
+        })
+        .returning()
+        .get();
+
+      if (dados.horarios.length > 0) {
+        tx.insert(schema.horarios)
+          .values(dados.horarios.map((horaMinuto, ordem) => ({ remedioId: remedioInserido.id, horaMinuto, ordem })))
+          .run();
+      }
+
+      const horariosInseridos = tx
+        .select()
+        .from(schema.horarios)
+        .where(eq(schema.horarios.remedioId, remedioInserido.id))
+        .orderBy(asc(schema.horarios.horaMinuto))
+        .all();
+
+      return paraDominio({ ...remedioInserido, horarios: horariosInseridos });
+    });
+  },
+
+  /**
+   * Próxima cor do rodízio (11.8): a seguinte, na ordem da paleta, depois
+   * da cor do último remédio criado — incluindo arquivados. Sem remédio
+   * nenhum ainda, começa em `coral`.
+   *
+   * Recebe: nada.
+   * Devolve: a cor sugerida para o bloco 8 do cadastro (8.2).
+   */
+  proximaCor(): Cor {
+    const ultimo = db.select({ cor: schema.remedios.cor }).from(schema.remedios).orderBy(desc(schema.remedios.id)).limit(1).get();
+
+    if (!ultimo) return ORDEM_RODIZIO_CORES[0];
+
+    const indiceAtual = ORDEM_RODIZIO_CORES.indexOf(ultimo.cor as Cor);
+    const proximoIndice = (indiceAtual + 1) % ORDEM_RODIZIO_CORES.length;
+    return ORDEM_RODIZIO_CORES[proximoIndice];
   },
 };
 

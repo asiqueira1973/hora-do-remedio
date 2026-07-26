@@ -16,3 +16,15 @@ export const FORMA_ICONE: Record<Forma, keyof typeof Ionicons.glyphMap> = {
   spray: 'cloud-outline',
   outro: 'ellipsis-horizontal-circle-outline',
 };
+
+/** Rótulo em português de cada forma farmacêutica (7.6), para a UI. */
+export const FORMA_ROTULO: Record<Forma, string> = {
+  comprimido: 'Comprimido',
+  capsula: 'Cápsula',
+  gotas: 'Gotas',
+  xarope: 'Xarope',
+  injecao: 'Injeção',
+  pomada: 'Pomada',
+  spray: 'Spray / bombinha',
+  outro: 'Outro',
+};

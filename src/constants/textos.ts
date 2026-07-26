@@ -36,6 +36,11 @@ export const TEXTOS = {
     frequenciaPergunta: 'Com que frequência?',
     horariosPergunta: 'A que horas?',
     horariosAdicionar: 'Adicionar horário',
+    // Não existe string equivalente na 15.5 — o spec não especifica o
+    // texto dos botões do seletor de hora nativo (bloco 5). Seguindo o
+    // vocabulário e o tom da 15.2 (direto, sem jargão).
+    horarioConfirmar: 'Pronto',
+    horarioCancelarSelecao: 'Cancelar',
     lembretePergunta: 'Quer ser lembrado?',
     lembreteSim: 'Sim, me avise',
     lembreteNao: 'Não precisa avisar',
@@ -53,6 +58,10 @@ export const TEXTOS = {
     erroAoSalvar: 'Não conseguimos salvar. Tente de novo.',
     sairSemSalvarTitulo: 'Sair sem salvar?',
     sairSemSalvarTexto: 'O que você preencheu será perdido.',
+    // Rótulos dos botões do alerta acima — a 15.5 não especifica o texto
+    // dos botões, só o título e o corpo.
+    sairSemSalvarContinuar: 'Continuar editando',
+    sairSemSalvarConfirmar: 'Sair sem salvar',
   },
   detalhe: {
     editar: 'Editar',
