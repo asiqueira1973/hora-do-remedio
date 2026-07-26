@@ -12,7 +12,7 @@
  * numa migration SQL própria (ver src/db/migrations/0001_triggers.sql).
  */
 
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { check, index, integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
 
 /**
@@ -163,3 +163,21 @@ export const preferencias = sqliteTable(
     check('ck_preferencias_som', sql`${t.somLembrete} IN (0, 1)`),
   ],
 );
+
+/**
+ * Relações entre as tabelas (só para a API relacional do Drizzle —
+ * `db.query...with:{...}`). Não gera SQL nenhum; a cardinalidade real é
+ * garantida pelas foreign keys da seção 7.
+ */
+export const remediosRelations = relations(remedios, ({ many }) => ({
+  horarios: many(horarios),
+}));
+
+export const horariosRelations = relations(horarios, ({ one, many }) => ({
+  remedio: one(remedios, { fields: [horarios.remedioId], references: [remedios.id] }),
+  notificacoesAgendadas: many(notificacoesAgendadas),
+}));
+
+export const notificacoesAgendadasRelations = relations(notificacoesAgendadas, ({ one }) => ({
+  horario: one(horarios, { fields: [notificacoesAgendadas.horarioId], references: [horarios.id] }),
+}));

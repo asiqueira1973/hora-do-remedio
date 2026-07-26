@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { BotaoPrimario } from '../src/components/BotaoPrimario';
 import { TextoGrande } from '../src/components/TextoGrande';
@@ -84,9 +85,11 @@ export default function RootLayout() {
   }
 
   return (
-    <PreferencesProvider>
-      <Stack screenOptions={{ headerShown: false }} />
-    </PreferencesProvider>
+    <SafeAreaProvider>
+      <PreferencesProvider>
+        <Stack screenOptions={{ headerShown: false }} />
+      </PreferencesProvider>
+    </SafeAreaProvider>
   );
 }
 
