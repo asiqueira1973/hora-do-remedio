@@ -354,15 +354,10 @@ export function MedicationForm({ tituloBotaoSalvar, valoresIniciais, corSugerida
 
         {mostraHorarioELembrete ? (
           <Bloco titulo={TEXTOS.cadastro.lembretePergunta}>
-            <Pressable
-              onPress={() => setLembreteAtivo((v) => !v)}
-              accessibilityRole="switch"
-              accessibilityState={{ checked: lembreteAtivo }}
-              style={styles.linhaSwitch}
-            >
+            <View style={styles.linhaSwitch}>
               <TextoGrande token="corpo">{lembreteAtivo ? TEXTOS.cadastro.lembreteSim : TEXTOS.cadastro.lembreteNao}</TextoGrande>
               <Switch value={lembreteAtivo} onValueChange={setLembreteAtivo} trackColor={{ true: CORES_SEMANTICAS.acao, false: undefined }} />
-            </Pressable>
+            </View>
           </Bloco>
         ) : null}
 

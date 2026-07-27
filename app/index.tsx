@@ -101,7 +101,17 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.cabecalho}>
-        <TextoGrande token="display">{obterSaudacao(agora.getHours())}</TextoGrande>
+        <View style={styles.cabecalhoLinha}>
+          <TextoGrande token="display">{obterSaudacao(agora.getHours())}</TextoGrande>
+          <Pressable
+            onPress={() => router.push('/ajustes')}
+            accessibilityRole="button"
+            accessibilityLabel={TEXTOS.ajustes.titulo}
+            style={styles.botaoAjustes}
+          >
+            <Ionicons name="settings-outline" size={28} color={CORES_SEMANTICAS.neutroTexto} />
+          </Pressable>
+        </View>
         <TextoGrande token="apoio" cor="#6B6B70" style={styles.data}>
           {formatarDataPorExtenso(agora)}
         </TextoGrande>
@@ -227,6 +237,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 12,
+  },
+  cabecalhoLinha: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  botaoAjustes: {
+    width: TOQUE_MINIMO,
+    height: TOQUE_MINIMO,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   data: {
     marginTop: 4,

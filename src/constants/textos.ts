@@ -90,14 +90,29 @@ export const TEXTOS = {
     tamanhoLetras: 'Tamanho das letras',
     tamanhoGrande: 'Grande',
     tamanhoGigante: 'Gigante',
+    tamanhoExemplo: 'Losartana',
     somAviso: 'Som do aviso',
     arquivados: 'Remédios que parei',
     sobre: 'Sobre o app',
     apagarTudo: 'Apagar todos os meus dados',
     privacidade: 'Seus dados ficam só no seu iPhone. Nada é enviado para a internet.',
+    // As chaves abaixo não têm texto exato na 15.5 — o spec só pede
+    // "confirmação dupla em texto claro" (8.6). Seguindo o tom da 15.2
+    // (direto, sem culpar o usuário, sem tecnicismo).
+    apagarConfirmacao1Titulo: 'Apagar todos os meus dados?',
+    apagarConfirmacao1Texto: 'Todos os remédios e avisos cadastrados serão removidos. Não é possível desfazer.',
+    apagarConfirmacao1Cancelar: 'Cancelar',
+    apagarConfirmacao1Continuar: 'Continuar',
+    apagarConfirmacao2Titulo: 'Tem certeza?',
+    apagarConfirmacao2Texto: 'Ao confirmar, os remédios, horários e avisos somem agora mesmo.',
+    apagarConfirmacao2Cancelar: 'Cancelar',
+    apagarConfirmacao2Confirmar: 'Sim, apagar tudo',
   },
   sobre: {
     politicaPrivacidade: 'Política de Privacidade',
+    // Pergunta aberta 25.6 do spec: resolvida por Alexandre nesta sessão —
+    // a política de privacidade fica no Notion.
+    urlPoliticaPrivacidade: 'https://www.notion.so/2544305f24e180f784a8cde4fad854a2?source=copy_link',
   },
   arquivados: {
     vazio: 'Você não parou de tomar nenhum remédio',
