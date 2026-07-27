@@ -9,6 +9,7 @@ import { TEXTOS } from '../src/constants/textos';
 import { agruparPorHorario, ROTULOS_FAIXA } from '../src/features/medications/agruparPorHorario';
 import { useArchiveBanner } from '../src/features/medications/ArchiveBannerContext';
 import { MedicationCard } from '../src/features/medications/MedicationCard';
+import { compartilhar, gerarTexto } from '../src/features/export/exportadorLista';
 import { reconciliar } from '../src/features/reminders/reconciliadorLembretes';
 import { calcularCustoDeAgendamento, COTA_NOTIFICACOES_IOS } from '../src/features/reminders/servicoLembretes';
 import { usePermissaoNotificacao } from '../src/features/reminders/usePermissaoNotificacao';
@@ -104,6 +105,23 @@ export default function Home() {
         <TextoGrande token="apoio" cor="#6B6B70" style={styles.data}>
           {formatarDataPorExtenso(agora)}
         </TextoGrande>
+        <Pressable
+          onPress={() => compartilhar(gerarTexto(remedios))}
+          disabled={remedios.length === 0}
+          accessibilityRole="button"
+          accessibilityLabel={remedios.length === 0 ? TEXTOS.home.botaoCompartilharDesabilitado : TEXTOS.home.botaoCompartilhar}
+          style={[styles.botaoCompartilhar, remedios.length === 0 && styles.botaoCompartilharDesabilitado]}
+        >
+          <Ionicons
+            name="share-outline"
+            size={22}
+            color={remedios.length === 0 ? '#8E8E93' : CORES_SEMANTICAS.acao}
+            style={styles.botaoCompartilharIcone}
+          />
+          <TextoGrande token="corpo" cor={remedios.length === 0 ? '#8E8E93' : CORES_SEMANTICAS.acao}>
+            {remedios.length === 0 ? TEXTOS.home.botaoCompartilharDesabilitado : TEXTOS.home.botaoCompartilhar}
+          </TextoGrande>
+        </Pressable>
       </View>
 
       {permissao === 'denied' ? (
@@ -212,6 +230,19 @@ const styles = StyleSheet.create({
   },
   data: {
     marginTop: 4,
+  },
+  botaoCompartilhar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minHeight: TOQUE_MINIMO,
+    marginTop: 8,
+    alignSelf: 'flex-start',
+  },
+  botaoCompartilharDesabilitado: {
+    opacity: 0.6,
+  },
+  botaoCompartilharIcone: {
+    marginRight: 8,
   },
   lista: {
     paddingHorizontal: ESPACAMENTO.margemLateralTela,
