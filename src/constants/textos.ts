@@ -75,6 +75,9 @@ export const TEXTOS = {
     arquivadoDesfazer: 'Desfazer',
     mudarParaQuandoPrecisarTitulo: 'Tirar dos horários?',
     mudarParaQuandoPrecisarTexto: 'Esse remédio vai sair dos horários e os avisos vão parar. Continuar?',
+    // Rótulos dos botões do alerta acima — a 15.5 não especifica.
+    mudarParaQuandoPrecisarCancelar: 'Cancelar',
+    mudarParaQuandoPrecisarConfirmar: 'Continuar',
   },
   permissao: {
     titulo: 'Para avisar na hora do remédio, o app precisa da sua permissão',

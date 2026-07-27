@@ -1,4 +1,4 @@
-import { asc, desc, eq, isNull } from 'drizzle-orm';
+import { asc, desc, eq, isNotNull, isNull, sql } from 'drizzle-orm';
 
 import { db } from '../db/client';
 import * as schema from '../db/schema';
@@ -113,6 +113,142 @@ export const repositorioRemedios = {
 
       return paraDominio({ ...remedioInserido, horarios: horariosInseridos });
     });
+  },
+
+  /**
+   * Query relacional crua de um remédio por id, com horários ordenados.
+   *
+   * Recebe: `id` do remédio.
+   * Devolve: o *query builder* (não resolvido) — para a tela de detalhe
+   * (8.3) usar com `useLiveQuery`.
+   */
+  queryPorId(id: number) {
+    return db.query.remedios.findFirst({
+      where: eq(schema.remedios.id, id),
+      with: { horarios: { orderBy: asc(schema.horarios.horaMinuto) } },
+    });
+  },
+
+  /**
+   * Busca um remédio por id, com horários (8.3 — tela de detalhe).
+   *
+   * Recebe: `id` do remédio.
+   * Devolve: `RemedioComHorarios` ou `null` se não existir.
+   */
+  async buscarPorId(id: number): Promise<RemedioComHorarios | null> {
+    const linha = await this.queryPorId(id);
+    return linha ? paraDominio(linha) : null;
+  },
+
+  /**
+   * Query relacional crua de remédios arquivados, mais recentes primeiro.
+   *
+   * Recebe: nada.
+   * Devolve: o *query builder* — para "Remédios que parei" (8.3) reagir
+   * a mudanças via `useLiveQuery`.
+   */
+  queryArquivados() {
+    return db.query.remedios.findMany({
+      where: isNotNull(schema.remedios.arquivadoEm),
+      with: { horarios: { orderBy: asc(schema.horarios.horaMinuto) } },
+      orderBy: desc(schema.remedios.arquivadoEm),
+    });
+  },
+
+  /**
+   * Remédios arquivados (`arquivado_em` preenchido), mais recentes
+   * primeiro (8.3).
+   *
+   * Recebe: nada.
+   * Devolve: `RemedioComHorarios[]`.
+   */
+  async listarArquivados(): Promise<RemedioComHorarios[]> {
+    const linhas = await this.queryArquivados();
+    return linhas.map(paraDominio);
+  },
+
+  /**
+   * Atualiza os dados de um remédio e **reescreve** seus horários numa
+   * transação só (13-A.1): apaga os horários antigos (o cascade some
+   * junto com as notificações agendadas deles, 7.4) e insere os novos.
+   *
+   * Recebe: `id` do remédio e `NovoRemedio` com os dados do formulário
+   * de edição (8.3, mesmo formulário do 8.2).
+   * Devolve: o remédio atualizado, com os novos horários.
+   *
+   * Implementa a regra de edição da 8.3: "editar horários reescreve as
+   * linhas de horarios... nunca edita notificação existente — cancelar e
+   * recriar é a única operação confiável." O agendamento em si é
+   * responsabilidade da tela, a partir do épico 8.4.
+   */
+  async atualizar(id: number, dados: NovoRemedio): Promise<RemedioComHorarios> {
+    return db.transaction((tx) => {
+      const remedioAtualizado = tx
+        .update(schema.remedios)
+        .set({
+          nome: dados.nome,
+          dose: dados.dose,
+          forma: dados.forma,
+          frequencia: dados.frequencia,
+          intervaloDias: dados.intervaloDias,
+          diasSemana: dados.diasSemana,
+          observacao: dados.observacao,
+          lembreteAtivo: dados.lembreteAtivo ? 1 : 0,
+          cor: dados.cor,
+        })
+        .where(eq(schema.remedios.id, id))
+        .returning()
+        .get();
+
+      tx.delete(schema.horarios).where(eq(schema.horarios.remedioId, id)).run();
+
+      if (dados.horarios.length > 0) {
+        tx.insert(schema.horarios)
+          .values(dados.horarios.map((horaMinuto, ordem) => ({ remedioId: id, horaMinuto, ordem })))
+          .run();
+      }
+
+      const horariosAtualizados = tx
+        .select()
+        .from(schema.horarios)
+        .where(eq(schema.horarios.remedioId, id))
+        .orderBy(asc(schema.horarios.horaMinuto))
+        .all();
+
+      return paraDominio({ ...remedioAtualizado, horarios: horariosAtualizados });
+    });
+  },
+
+  /**
+   * Arquiva um remédio (soft delete, 7.8): preenche `arquivado_em`. Não
+   * apaga nada.
+   *
+   * Recebe: `id` do remédio.
+   * Devolve: nada.
+   *
+   * Implementa "Parar de tomar" (8.3) — o cancelamento das notificações
+   * é responsabilidade da tela, chamando o serviço de lembretes (13-A.2,
+   * a partir de 8.4).
+   */
+  async arquivar(id: number): Promise<void> {
+    await db
+      .update(schema.remedios)
+      .set({ arquivadoEm: sql`(datetime('now'))` })
+      .where(eq(schema.remedios.id, id));
+  },
+
+  /**
+   * Desarquiva um remédio: limpa `arquivado_em`, trazendo-o de volta aos
+   * ativos com os horários originais intactos.
+   *
+   * Recebe: `id` do remédio.
+   * Devolve: nada.
+   *
+   * Implementa "Voltar a tomar" (8.3). O reagendamento das notificações
+   * é responsabilidade da tela (13-A.2, a partir de 8.4).
+   */
+  async desarquivar(id: number): Promise<void> {
+    await db.update(schema.remedios).set({ arquivadoEm: null }).where(eq(schema.remedios.id, id));
   },
 
   /**

@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { BotaoPrimario } from '../src/components/BotaoPrimario';
 import { TextoGrande } from '../src/components/TextoGrande';
 import { inicializarBanco } from '../src/db/client';
+import { ArchiveBannerProvider } from '../src/features/medications/ArchiveBannerContext';
 import { PreferencesProvider } from '../src/features/settings/PreferencesContext';
 import { CORES_SEMANTICAS } from '../src/theme/colors';
 import { TEXTOS } from '../src/constants/textos';
@@ -87,7 +88,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <PreferencesProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <ArchiveBannerProvider>
+          <Stack screenOptions={{ headerShown: false }} />
+        </ArchiveBannerProvider>
       </PreferencesProvider>
     </SafeAreaProvider>
   );

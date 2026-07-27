@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TextoGrande } from '../src/components/TextoGrande';
 import { TEXTOS } from '../src/constants/textos';
 import { agruparPorHorario, ROTULOS_FAIXA } from '../src/features/medications/agruparPorHorario';
+import { useArchiveBanner } from '../src/features/medications/ArchiveBannerContext';
 import { MedicationCard } from '../src/features/medications/MedicationCard';
 import { remedioParaDominio, repositorioRemedios } from '../src/repositories/medications';
 import { CORES_SEMANTICAS } from '../src/theme/colors';
@@ -75,6 +76,7 @@ export default function Home() {
   const router = useRouter();
   const agora = new Date();
   const { data: linhas } = useLiveQuery(repositorioRemedios.queryAtivos());
+  const { banner, ocultarBanner } = useArchiveBanner();
 
   const remedios = (linhas ?? []).map(remedioParaDominio);
   const { grupos, quandoPrecisar } = agruparPorHorario(remedios);
@@ -142,6 +144,26 @@ export default function Home() {
           </TextoGrande>
         </Pressable>
       </View>
+
+      {banner ? (
+        <View style={styles.faixa}>
+          <TextoGrande token="corpo" cor="#FFFFFF" style={styles.faixaTexto}>
+            {TEXTOS.detalhe.arquivadoFaixa(banner.nome)}
+          </TextoGrande>
+          <Pressable
+            onPress={async () => {
+              await repositorioRemedios.desarquivar(banner.remedioId);
+              ocultarBanner();
+            }}
+            accessibilityRole="button"
+            style={styles.faixaBotao}
+          >
+            <TextoGrande token="botao" cor="#FFFFFF">
+              {TEXTOS.detalhe.arquivadoDesfazer}
+            </TextoGrande>
+          </Pressable>
+        </View>
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -210,5 +232,26 @@ const styles = StyleSheet.create({
   },
   fabIcone: {
     marginRight: 8,
+  },
+  faixa: {
+    position: 'absolute',
+    left: ESPACAMENTO.margemLateralTela,
+    right: ESPACAMENTO.margemLateralTela,
+    bottom: 24 + ALTURAS.fab + 16,
+    minHeight: TOQUE_MINIMO,
+    borderRadius: 16,
+    backgroundColor: '#1C1C1E',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  faixaTexto: {
+    flex: 1,
+  },
+  faixaBotao: {
+    minHeight: TOQUE_MINIMO,
+    justifyContent: 'center',
+    paddingLeft: 16,
   },
 });

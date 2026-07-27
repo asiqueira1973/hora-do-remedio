@@ -133,12 +133,28 @@ export function MedicationForm({ tituloBotaoSalvar, valoresIniciais, corSugerida
   const offsetsRef = useRef<Record<string, number>>({});
 
   const mostraHorarioELembrete = frequencia !== 'quando_precisar';
+  const modoEdicao = valoresIniciais !== undefined;
 
-  function selecionarFrequencia(valor: FrequenciaFormulario) {
+  function aplicarFrequencia(valor: FrequenciaFormulario) {
     setFrequencia(valor);
     if (valor !== 'quando_precisar' && horarios.length === 0) {
       setHorarios(['08:00']);
     }
+  }
+
+  function selecionarFrequencia(valor: FrequenciaFormulario) {
+    // Na edição, trocar para "quando_precisar" apaga horários já
+    // cadastrados e desliga o lembrete — por isso pede confirmação
+    // própria (regra de edição da 8.3). No cadastro (8.2) não há nada
+    // estabelecido ainda, então troca direto.
+    if (modoEdicao && valor === 'quando_precisar' && frequencia !== 'quando_precisar' && horarios.length > 0) {
+      Alert.alert(TEXTOS.detalhe.mudarParaQuandoPrecisarTitulo, TEXTOS.detalhe.mudarParaQuandoPrecisarTexto, [
+        { text: TEXTOS.detalhe.mudarParaQuandoPrecisarCancelar, style: 'cancel' },
+        { text: TEXTOS.detalhe.mudarParaQuandoPrecisarConfirmar, style: 'destructive', onPress: () => aplicarFrequencia(valor) },
+      ]);
+      return;
+    }
+    aplicarFrequencia(valor);
   }
 
   function alternarDiaSemana(digito: string) {
@@ -188,12 +204,17 @@ export function MedicationForm({ tituloBotaoSalvar, valoresIniciais, corSugerida
   }
 
   function houveAlteracao(): boolean {
+    // Compara sempre contra os valores iniciais (vazios/defaults no
+    // cadastro, os dados reais na edição) — nunca contra "campo vazio",
+    // senão o Cancelar da edição pediria confirmação mesmo sem nada
+    // alterado, já que o nome nunca começa vazio ali.
     return (
-      nome.trim() !== '' ||
-      dose.trim() !== '' ||
-      observacao.trim() !== '' ||
+      nome.trim() !== (valoresIniciais?.nome ?? '').trim() ||
+      dose.trim() !== (valoresIniciais?.dose ?? '').trim() ||
+      observacao.trim() !== (valoresIniciais?.observacao ?? '').trim() ||
       forma !== (valoresIniciais?.forma ?? 'comprimido') ||
       frequencia !== (valoresIniciais?.frequencia ?? 'diario') ||
+      diasSemana !== (valoresIniciais?.diasSemana ?? '') ||
       cor !== (valoresIniciais?.cor ?? corSugerida) ||
       lembreteAtivo !== (valoresIniciais?.lembreteAtivo ?? true) ||
       JSON.stringify(horarios) !== JSON.stringify(valoresIniciais?.horarios ?? ['08:00'])
