@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { TextoGrande } from '../../src/components/TextoGrande';
 import { TEXTOS } from '../../src/constants/textos';
 import { FORMA_ICONE } from '../../src/features/medications/formaIcone';
+import { reconciliar } from '../../src/features/reminders/reconciliadorLembretes';
 import { remedioParaDominio, repositorioRemedios } from '../../src/repositories/medications';
 import { PALETA_REMEDIOS, CORES_SEMANTICAS } from '../../src/theme/colors';
 import { ESPACAMENTO, RAIO, TOQUE_MINIMO } from '../../src/theme/spacing';
@@ -81,7 +82,10 @@ function ItemArquivado({ remedio }: { remedio: RemedioComHorarios }) {
         </View>
       </View>
       <Pressable
-        onPress={() => repositorioRemedios.desarquivar(remedio.id)}
+        onPress={async () => {
+          await repositorioRemedios.desarquivar(remedio.id);
+          await reconciliar();
+        }}
         accessibilityRole="button"
         accessibilityLabel={TEXTOS.arquivados.voltarATomar}
         style={styles.botaoVoltarATomar}

@@ -26,12 +26,15 @@
     "react-native-screens": "~4.16.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/react": "~19.1.10",
     "babel-plugin-inline-import": "^3.0.0",
     "babel-preset-expo": "^14.0.6",
     "drizzle-kit": "0.31.10",
     "eslint": "^9.0.0",
     "eslint-config-expo": "~10.0.0",
+    "jest": "^29.7.0",
+    "jest-expo": "^54.0.17",
     "typescript": "~5.9.2"
   },
   "scripts": {
@@ -40,7 +43,11 @@
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "android": "expo run:android"
+    "android": "expo run:android",
+    "test": "jest"
   },
-  "private": true
+  "private": true,
+  "jest": {
+    "preset": "jest-expo/ios"
+  }
 }

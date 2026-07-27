@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { useRouter } from 'expo-router';
-import { Pressable, SectionList, StyleSheet, View } from 'react-native';
+import { Linking, Pressable, SectionList, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TextoGrande } from '../src/components/TextoGrande';
@@ -9,6 +9,9 @@ import { TEXTOS } from '../src/constants/textos';
 import { agruparPorHorario, ROTULOS_FAIXA } from '../src/features/medications/agruparPorHorario';
 import { useArchiveBanner } from '../src/features/medications/ArchiveBannerContext';
 import { MedicationCard } from '../src/features/medications/MedicationCard';
+import { reconciliar } from '../src/features/reminders/reconciliadorLembretes';
+import { calcularCustoDeAgendamento, COTA_NOTIFICACOES_IOS } from '../src/features/reminders/servicoLembretes';
+import { usePermissaoNotificacao } from '../src/features/reminders/usePermissaoNotificacao';
 import { remedioParaDominio, repositorioRemedios } from '../src/repositories/medications';
 import { CORES_SEMANTICAS } from '../src/theme/colors';
 import { ALTURAS, ESPACAMENTO, SOMBRA, TOQUE_MINIMO } from '../src/theme/spacing';
@@ -77,9 +80,11 @@ export default function Home() {
   const agora = new Date();
   const { data: linhas } = useLiveQuery(repositorioRemedios.queryAtivos());
   const { banner, ocultarBanner } = useArchiveBanner();
+  const permissao = usePermissaoNotificacao();
 
   const remedios = (linhas ?? []).map(remedioParaDominio);
   const { grupos, quandoPrecisar } = agruparPorHorario(remedios);
+  const cotaEstourada = calcularCustoDeAgendamento(remedios) > COTA_NOTIFICACOES_IOS;
 
   const secoes: Secao[] = [
     ...grupos.map((grupo) => ({
@@ -100,6 +105,22 @@ export default function Home() {
           {formatarDataPorExtenso(agora)}
         </TextoGrande>
       </View>
+
+      {permissao === 'denied' ? (
+        <Pressable onPress={() => Linking.openURL('app-settings:')} style={styles.faixaAtencao}>
+          <TextoGrande token="apoio" cor="#FFFFFF">
+            {TEXTOS.home.avisosDesligados}
+          </TextoGrande>
+        </Pressable>
+      ) : null}
+
+      {cotaEstourada ? (
+        <View style={styles.faixaAtencao}>
+          <TextoGrande token="apoio" cor="#FFFFFF">
+            {TEXTOS.home.cotaEstourada}
+          </TextoGrande>
+        </View>
+      ) : null}
 
       {remedios.length === 0 ? (
         <View style={styles.vazio}>
@@ -153,6 +174,7 @@ export default function Home() {
           <Pressable
             onPress={async () => {
               await repositorioRemedios.desarquivar(banner.remedioId);
+              await reconciliar();
               ocultarBanner();
             }}
             accessibilityRole="button"
@@ -177,6 +199,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: ESPACAMENTO.margemLateralTela,
     paddingTop: 16,
     paddingBottom: 8,
+  },
+  faixaAtencao: {
+    marginHorizontal: ESPACAMENTO.margemLateralTela,
+    marginTop: 12,
+    minHeight: TOQUE_MINIMO,
+    justifyContent: 'center',
+    backgroundColor: CORES_SEMANTICAS.atencao,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
   data: {
     marginTop: 4,

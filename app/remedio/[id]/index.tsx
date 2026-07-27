@@ -12,6 +12,7 @@ import { TEXTOS } from '../../../src/constants/textos';
 import { FORMA_ICONE } from '../../../src/features/medications/formaIcone';
 import { formatarFrequencia } from '../../../src/features/medications/formatarFrequencia';
 import { useArchiveBanner } from '../../../src/features/medications/ArchiveBannerContext';
+import { reconciliar } from '../../../src/features/reminders/reconciliadorLembretes';
 import { remedioParaDominio, repositorioRemedios } from '../../../src/repositories/medications';
 import { PALETA_REMEDIOS } from '../../../src/theme/colors';
 import { ESPACAMENTO, RAIO } from '../../../src/theme/spacing';
@@ -55,6 +56,7 @@ export default function DetalheRemedioScreen() {
         style: 'destructive',
         onPress: async () => {
           await repositorioRemedios.arquivar(remedio.id);
+          await reconciliar();
           mostrarBanner({ remedioId: remedio.id, nome: remedio.nome });
           router.replace('/');
         },

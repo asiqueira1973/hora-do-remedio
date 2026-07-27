@@ -1,14 +1,16 @@
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { AppState, type AppStateStatus, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { BotaoPrimario } from '../src/components/BotaoPrimario';
 import { TextoGrande } from '../src/components/TextoGrande';
 import { inicializarBanco } from '../src/db/client';
 import { ArchiveBannerProvider } from '../src/features/medications/ArchiveBannerContext';
+import { reconciliar } from '../src/features/reminders/reconciliadorLembretes';
 import { PreferencesProvider } from '../src/features/settings/PreferencesContext';
 import { CORES_SEMANTICAS } from '../src/theme/colors';
 import { TEXTOS } from '../src/constants/textos';
@@ -16,6 +18,22 @@ import { TEXTOS } from '../src/constants/textos';
 // Segura a splash nativa até a fonte carregar e o banco migrar (8.0) — só
 // então a primeira tela aparece, nunca uma tela branca no meio do caminho.
 SplashScreen.preventAutoHideAsync();
+
+// Comportamento da notificação com o app aberto em primeiro plano: mostra
+// igual a uma notificação normal, respeitando o som (que já vem definido
+// por remédio no agendamento — 15.3/13-A.2). API atual do SDK 54, sem os
+// campos depreciados (4.6).
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
+/** Acima de 1 hora em background, a volta ao app dispara reconciliação (11.5). */
+const LIMIAR_RECONCILIACAO_MS = 60 * 60 * 1000;
 
 /**
  * Layout raiz do app: carrega a Nunito, inicializa o banco (migrations +
@@ -37,6 +55,7 @@ export default function RootLayout() {
   });
 
   const [estadoBanco, setEstadoBanco] = useState<'carregando' | 'pronto' | 'erro'>('carregando');
+  const ultimaVezAtivoRef = useRef<number>(Date.now());
 
   useEffect(() => {
     let cancelado = false;
@@ -60,6 +79,27 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontesCarregadas, estadoBanco]);
+
+  // Reconciliação (11.5): roda na abertura do app, depois da migration, sem
+  // travar a interface (por isso não é `await`ada aqui), e de novo sempre
+  // que o app volta do background depois de mais de 1 hora.
+  useEffect(() => {
+    if (estadoBanco !== 'pronto') return;
+
+    reconciliar().catch((erro) => console.error('[reconciliação] falha na abertura', erro));
+    ultimaVezAtivoRef.current = Date.now();
+
+    const assinatura = AppState.addEventListener('change', (proximoEstado: AppStateStatus) => {
+      if (proximoEstado !== 'active') return;
+      const agora = Date.now();
+      if (agora - ultimaVezAtivoRef.current > LIMIAR_RECONCILIACAO_MS) {
+        reconciliar().catch((erro) => console.error('[reconciliação] falha ao voltar do background', erro));
+      }
+      ultimaVezAtivoRef.current = agora;
+    });
+
+    return () => assinatura.remove();
+  }, [estadoBanco]);
 
   if (!fontesCarregadas && !erroFontes) {
     return null;
@@ -89,7 +129,9 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <PreferencesProvider>
         <ArchiveBannerProvider>
-          <Stack screenOptions={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="permissao-aviso" options={{ presentation: 'modal' }} />
+          </Stack>
         </ArchiveBannerProvider>
       </PreferencesProvider>
     </SafeAreaProvider>

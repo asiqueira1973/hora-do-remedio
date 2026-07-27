@@ -4,6 +4,8 @@ import { useMemo } from 'react';
 
 import { TEXTOS } from '../../src/constants/textos';
 import { MedicationForm } from '../../src/features/medications/MedicationForm';
+import { reconciliar } from '../../src/features/reminders/reconciliadorLembretes';
+import { servicoLembretes } from '../../src/features/reminders/servicoLembretes';
 import { repositorioRemedios } from '../../src/repositories/medications';
 import type { NovoRemedio } from '../../src/types/domain';
 
@@ -14,10 +16,9 @@ import type { NovoRemedio } from '../../src/types/domain';
  * Devolve: o `MedicationForm` em modo de criação.
  *
  * Implementa a orquestração que a 13-A.1 deixa para a tela: chama
- * `repositorioRemedios.criar`, dispara a háptica de sucesso e fecha a
- * tela. O agendamento de notificação (servicoLembretes, 13-A.2) ainda
- * não existe — entra no épico 8.4, que vai acrescentar essa chamada
- * aqui sem mudar o resto do fluxo.
+ * `repositorioRemedios.criar` e, se o remédio ficou com lembrete ligado,
+ * decide entre a tela explicativa de permissão (8.4, só na primeira vez
+ * — permissão ainda `undetermined`) ou reconciliar direto.
  */
 export default function NovoRemedioScreen() {
   const router = useRouter();
@@ -25,6 +26,16 @@ export default function NovoRemedioScreen() {
 
   async function aoSalvar(dados: NovoRemedio) {
     await repositorioRemedios.criar(dados);
+
+    if (dados.lembreteAtivo) {
+      const estadoPermissao = await servicoLembretes.verificarPermissao();
+      if (estadoPermissao === 'undetermined') {
+        router.replace('/permissao-aviso');
+        return;
+      }
+    }
+
+    await reconciliar();
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     router.back();
   }

@@ -6,6 +6,8 @@ import { View } from 'react-native';
 import { TEXTOS } from '../../../src/constants/textos';
 import { MedicationForm } from '../../../src/features/medications/MedicationForm';
 import type { FrequenciaFormulario } from '../../../src/features/medications/validarFormulario';
+import { reconciliar } from '../../../src/features/reminders/reconciliadorLembretes';
+import { servicoLembretes } from '../../../src/features/reminders/servicoLembretes';
 import { remedioParaDominio, repositorioRemedios } from '../../../src/repositories/medications';
 import { CORES_SEMANTICAS } from '../../../src/theme/colors';
 import type { NovoRemedio } from '../../../src/types/domain';
@@ -39,6 +41,16 @@ export default function EditarRemedioScreen() {
 
   async function aoSalvar(dados: NovoRemedio) {
     await repositorioRemedios.atualizar(remedioId, dados);
+
+    if (dados.lembreteAtivo) {
+      const estadoPermissao = await servicoLembretes.verificarPermissao();
+      if (estadoPermissao === 'undetermined') {
+        router.replace('/permissao-aviso');
+        return;
+      }
+    }
+
+    await reconciliar();
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     router.back();
   }
