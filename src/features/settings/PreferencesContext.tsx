@@ -10,12 +10,15 @@ interface PreferencesContextValue {
   escalaFonte: EscalaFonte;
   /** Se o lembrete toca com som (8.6). `true` até a primeira leitura terminar. */
   somLembrete: boolean;
+  /** Data/hora de conclusão do onboarding (8.7), ou `null` se nunca concluído. */
+  onboardingConcluidoEm: string | null;
   carregando: boolean;
 }
 
 const PreferencesContext = createContext<PreferencesContextValue>({
   escalaFonte: 'grande',
   somLembrete: true,
+  onboardingConcluidoEm: null,
   carregando: true,
 });
 
@@ -38,6 +41,7 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const value: PreferencesContextValue = {
     escalaFonte: (linha?.escalaFonte as EscalaFonte | undefined) ?? 'grande',
     somLembrete: linha ? linha.somLembrete === 1 : true,
+    onboardingConcluidoEm: linha?.onboardingConcluidoEm ?? null,
     carregando: linha === undefined,
   };
 

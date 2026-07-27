@@ -1,5 +1,5 @@
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef, useState } from 'react';
@@ -11,7 +11,7 @@ import { TextoGrande } from '../src/components/TextoGrande';
 import { inicializarBanco } from '../src/db/client';
 import { ArchiveBannerProvider } from '../src/features/medications/ArchiveBannerContext';
 import { reconciliar } from '../src/features/reminders/reconciliadorLembretes';
-import { PreferencesProvider } from '../src/features/settings/PreferencesContext';
+import { PreferencesProvider, usePreferences } from '../src/features/settings/PreferencesContext';
 import { CORES_SEMANTICAS } from '../src/theme/colors';
 import { TEXTOS } from '../src/constants/textos';
 
@@ -129,6 +129,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <PreferencesProvider>
         <ArchiveBannerProvider>
+          <PortaoOnboarding />
           <Stack screenOptions={{ headerShown: false }}>
             <Stack.Screen name="permissao-aviso" options={{ presentation: 'modal' }} />
           </Stack>
@@ -136,6 +137,42 @@ export default function RootLayout() {
       </PreferencesProvider>
     </SafeAreaProvider>
   );
+}
+
+/**
+ * Mantém a rota coerente com `preferencias.onboarding_concluido_em` nos
+ * dois sentidos: manda para o onboarding (8.7) enquanto ele estiver vazio
+ * — na primeira abertura e de novo depois de "Apagar todos os meus
+ * dados" (8.6), que recria a linha de `preferencias` do zero — e manda
+ * de volta para a Home se, por algum motivo, a pessoa ainda estiver no
+ * onboarding depois dele já ter sido concluído.
+ *
+ * As duas direções importam: `concluirOnboarding()` grava no banco e
+ * `useLiveQuery` propaga a mudança de forma assíncrona, então a tela de
+ * onboarding também chama `router.replace('/')` sozinha ao terminar — se
+ * esse replace acontecer um instante antes do valor reativo atualizar,
+ * só o segundo `if` aqui embaixo corrige a rota; sem ele a pessoa fica
+ * presa de volta no onboarding.
+ *
+ * Recebe: nada.
+ * Devolve: nada — só o efeito de navegação; não renderiza UI própria.
+ */
+function PortaoOnboarding() {
+  const { onboardingConcluidoEm, carregando } = usePreferences();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (carregando) return;
+    const jaEstaNoOnboarding = pathname.startsWith('/onboarding');
+    if (!onboardingConcluidoEm && !jaEstaNoOnboarding) {
+      router.replace('/onboarding');
+    } else if (onboardingConcluidoEm && jaEstaNoOnboarding) {
+      router.replace('/');
+    }
+  }, [carregando, onboardingConcluidoEm, pathname, router]);
+
+  return null;
 }
 
 /**
