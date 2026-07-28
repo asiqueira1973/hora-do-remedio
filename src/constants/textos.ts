@@ -112,7 +112,8 @@ export const TEXTOS = {
     politicaPrivacidade: 'Política de Privacidade',
     // Pergunta aberta 25.6 do spec: resolvida por Alexandre nesta sessão —
     // a política de privacidade fica no Notion.
-    urlPoliticaPrivacidade: 'https://www.notion.so/2544305f24e180f784a8cde4fad854a2?source=copy_link',
+    urlPoliticaPrivacidade:
+      'https://app.notion.com/p/Pol-tica-de-Privacidade-Hora-do-Rem-dio-3ab4305f24e180ec88dedebfcade9f95?source=copy_link',
   },
   arquivados: {
     vazio: 'Você não parou de tomar nenhum remédio',
