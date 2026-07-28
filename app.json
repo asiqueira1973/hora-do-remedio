@@ -7,7 +7,9 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "platforms": ["ios"],
+    "platforms": [
+      "ios"
+    ],
     "ios": {
       "bundleIdentifier": "com.dablab.horadoremedio",
       "supportsTablet": false,
@@ -35,6 +37,13 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a16ba7d5-4e95-4f1f-b544-099215e54a14"
+      }
+    },
+    "owner": "alexsiq"
   }
 }
