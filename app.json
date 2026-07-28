@@ -13,7 +13,10 @@
     "ios": {
       "bundleIdentifier": "com.dablab.horadoremedio",
       "supportsTablet": false,
-      "requireFullScreen": true
+      "requireFullScreen": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "plugins": [
       "expo-router",
