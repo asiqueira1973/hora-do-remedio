@@ -5,6 +5,8 @@ A especificação completa está em [`spec.md`](spec.md) (fonte única de verdad
 ficou implementado de fato está documentado em [`DOCUMENTACAO-TECNICA.md`](DOCUMENTACAO-TECNICA.md)
 e [`SCHEMA.md`](SCHEMA.md).
 
+Repositório: https://github.com/asiqueira1973/hora-do-remedio (privado).
+
 ## Requisitos
 
 | Ferramenta | Versão usada nesta implementação |
@@ -82,20 +84,32 @@ npm run typecheck   # tsc --noEmit, strict
 npm run lint        # ESLint (config do Expo)
 ```
 
-## Buildar no EAS
+## Buildar e enviar no EAS
 
-Este repositório ainda não tem `eas.json` configurado. Para gerar um build de teste (TestFlight) ou
-de produção:
+`eas.json` já está configurado e o projeto linkado (`@alexsiq/hora-do-remedio` no EAS, App ID
+`com.dablab.horadoremedio` no Apple Developer, app "Hora do Remédio" no App Store Connect —
+roteiro completo do Anexo B do `spec.md` já percorrido uma vez, incluindo o primeiro build de
+produção enviado). Para builds seguintes:
 
 ```bash
-npx eas-cli login
-npx eas build:configure
-npx eas build --platform ios --profile preview     # TestFlight interno
-npx eas build --platform ios --profile production  # App Store
+npx eas-cli build --platform ios --profile preview     # TestFlight interno (sem submeter)
+npx eas-cli build --platform ios --profile production  # build de loja
+npx eas-cli submit --platform ios --profile production --latest  # envia o último build ao App Store Connect
 ```
 
-O roteiro completo de submissão (bundle id, categoria, política de privacidade, etc.) está no
-Anexo B do `spec.md` — ainda não percorrido nesta implementação.
+As credenciais de assinatura (Distribution Certificate + Provisioning Profile) ficam armazenadas
+remotamente no EAS (`credentialsSource: "remote"`) — não precisa gerar de novo a cada build. A
+chave de API do App Store Connect usada pelo `eas submit` (`ascApiKeyPath`/`ascApiKeyId`/
+`ascApiKeyIssuerId` em `eas.json`) aponta para um arquivo `.p8` em `secrets/`, **fora do controle
+de versão** (`*.p8` no `.gitignore`) — se for clonar este repositório num Mac novo, gere uma chave
+nova em App Store Connect → Users and Access → Integrations (acesso **App Manager**) e coloque o
+`.p8` em `secrets/` antes de rodar `eas submit`.
+
+Bump de `expo.ios.buildNumber` é automático (`autoIncrement: true` no perfil `production`) — não
+precisa incrementar à mão.
+
+O restante do checklist de submissão (categoria, Age Rating, screenshots, descrição/keywords,
+página de Suporte) segue o checklist B.8 do `spec.md`.
 
 ## Estrutura do projeto
 
