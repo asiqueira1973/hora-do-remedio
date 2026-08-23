@@ -249,6 +249,49 @@ o porquê em 19.6.
 
 ## 19.6 Divergências em relação ao spec
 
+### Redesenho visual para o padrão nativo da Apple (2026-08-23)
+
+Decisão de Alexandre, aprovada a partir de mockups gerados nesta sessão (o app "tinha cara de IA"):
+troca da identidade visual definida na seção 16 por uma mais próxima do Human Interface Guidelines
+da Apple — listas agrupadas nativas, tipografia do sistema, azul de sistema no lugar do verde. A
+16.8 marca cor/tipografia como "não editáveis pelo agente sem aprovação"; a aprovação aconteceu
+explicitamente nesta sessão, então o que segue são os valores **atuais**, substituindo os da 16.2/16.4:
+
+| Item | Valor da 16.2/16.4 (spec original) | Valor atual |
+| :---- | :---- | :---- |
+| Fonte | Nunito, empacotada no binário (`assets/fonts/`, removida) | Fonte do sistema (San Francisco no iOS) — `fontFamily` fica `undefined` no iOS, só `fontWeight` varia por token |
+| `acao` | `#1E9E5A` (verde) | `#007AFF` (azul de sistema do iOS) |
+| `perigo` | `#D93025` | `#FF3B30` (vermelho de sistema) |
+| `atencao` | `#B25E00` | `#FF9500` (laranja de sistema) |
+| `neutro_fundo` | `#F5F5F7` | `#F2F2F7` (cinza de "grouped list" do iOS) |
+| `neutro_borda` | `#D6D6DB` | `#E5E5EA` |
+| Raio de canto | 20pt cards / 16pt botões | 14pt em tudo |
+| Sombra | y:2 blur:8 opacidade 0.08 | y:1 blur:3 opacidade 0.06 — listas agrupadas do iOS quase não usam sombra |
+| Card de remédio | Fundo cheio na cor do remédio | Fundo branco + círculo de 48pt na cor do remédio à esquerda, chevron à direita — o padrão de linha de lista do iOS |
+| Botão destrutivo | Texto e borda `perigo`, fundo branco | Só texto `perigo`, sem borda nem fundo — linha de lista destrutiva nativa |
+| "+ Adicionar remédio" | FAB flutuante (círculo/pílula com sombra, canto inferior direito) | Barra larga ancorada embaixo, mesma altura (`ALTURAS.fab`) |
+
+Além disso, uma nova cor semântica foi adicionada (não existia na 16.4): `neutro_texto_secundario`
+(`#6E6E73`) — formaliza o cinza secundário que antes estava espalhado como `'#6B6B70'` literal em
+vários componentes.
+
+**O que não mudou:** os 6 tokens de `PALETA_REMEDIOS` (16.3) — `coral`, `azul`, `verde`, `amarelo`,
+`lilas`, `pessego` — continuam com os hex originais. Isso importa especialmente para o token
+`azul`: como a nova cor de ação também é azul (`#007AFF`), a regra dura da 16.4 ("nenhuma das seis
+cores de identificação pode coincidir com as semânticas") só continua valendo porque
+`PALETA_REMEDIOS.azul.detalhe` (`#2F7FE0`) é um azul visualmente distinto do azul de ação — não são
+o mesmo valor. Também não mudou: o piso de 20pt em qualquer texto (princípio 0.1, ainda respeitado
+em todo lugar, incluindo os cabeçalhos de seção em maiúsculas que o iOS normalmente renderiza bem
+menores) e a altura mínima de toque de 60pt.
+
+Telas com reestruturação de layout (não só cor): Home (`app/index.tsx`), formulário de
+cadastro/edição (`MedicationForm.tsx` — blocos viraram listas agrupadas, "Como você toma?" e "Com
+que frequência?" viraram linhas com marca de seleção via `SeletorOpcao` redesenhado), Detalhe do
+remédio (`app/remedio/[id]/index.tsx` — herói centralizado + duas listas agrupadas, "Voltar" virou
+link de navegação no topo em vez de botão), Ajustes (`app/ajustes/index.tsx` — seções com
+cabeçalho maiúsculo e grupos brancos). Os mockups em Design Components desta sessão (Início,
+Cadastro, Detalhe, Ajustes) documentam a direção visual antes da implementação.
+
 ### `intervalo_dias` cortado da experiência do usuário (resolve a pergunta aberta 25.8)
 
 Decisão tomada no início da implementação, confirmada por Alexandre: ninguém que ele conhece usa

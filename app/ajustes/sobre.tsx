@@ -36,7 +36,7 @@ export default function SobreScreen() {
       </View>
 
       <View style={styles.conteudo}>
-        <TextoGrande token="corpo" cor="#6B6B70">
+        <TextoGrande token="corpo" cor={CORES_SEMANTICAS.neutroTextoSecundario}>
           {`Versão ${appJson.expo.version}`}
         </TextoGrande>
         <TextoGrande token="corpo" style={styles.privacidade}>

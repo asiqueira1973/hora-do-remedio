@@ -44,7 +44,7 @@ export default function PermissaoAvisoScreen() {
         <TextoGrande token="titulo" style={styles.texto}>
           {TEXTOS.permissao.titulo}
         </TextoGrande>
-        <TextoGrande token="corpo" cor="#6B6B70" style={styles.texto}>
+        <TextoGrande token="corpo" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.texto}>
           {TEXTOS.permissao.texto}
         </TextoGrande>
       </View>

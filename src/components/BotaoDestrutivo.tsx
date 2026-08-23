@@ -9,13 +9,15 @@ interface BotaoDestrutivoProps extends PressableProps {
 }
 
 /**
- * Botão de ação destrutiva (16.5): texto e borda em `perigo`, fundo
- * branco. Usado em "Parar de tomar" (8.3) e "Apagar todos os meus dados"
- * (8.6) — nunca com fundo vermelho cheio, porque isso assusta o público
- * (regra explícita da 16.5).
+ * Ação destrutiva (16.5): texto em `perigo`, sem fundo nem borda — o
+ * padrão de linha de lista destrutiva do iOS (Ajustes → "Apagar Conta").
+ * Usado em "Parar de tomar" (8.3) e "Apagar todos os meus dados" (8.6) —
+ * nunca com fundo vermelho cheio, porque isso assusta o público (regra
+ * explícita da 16.5); o redesenho de 2026-08-23 também tira a borda, que
+ * já não é o padrão visual do app.
  *
  * Recebe: `texto` do rótulo e as props normais de `Pressable`.
- * Devolve: um botão tocável de no mínimo 60×60pt (princípio 0.2).
+ * Devolve: um elemento tocável de no mínimo 60×60pt (princípio 0.2).
  */
 export function BotaoDestrutivo({ texto, style, ...rest }: BotaoDestrutivoProps) {
   return (
@@ -34,9 +36,7 @@ export function BotaoDestrutivo({ texto, style, ...rest }: BotaoDestrutivoProps)
 
 const styles = StyleSheet.create({
   base: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 2,
-    borderColor: CORES_SEMANTICAS.perigo,
+    backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
     minHeight: TOQUE_MINIMO,
     borderRadius: RAIO.botao,
     alignItems: 'center',
@@ -44,6 +44,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   pressionado: {
-    opacity: 0.7,
+    opacity: 0.5,
   },
 });

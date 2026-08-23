@@ -63,11 +63,16 @@ interface BlocoProps {
   children: ReactNode;
 }
 
-/** Um bloco do formulário (8.2): pergunta + controle + erro opcional abaixo. */
+/**
+ * Um bloco do formulário (8.2): pergunta + controle + erro opcional
+ * abaixo. O título fica em cinza secundário acima do controle — o padrão
+ * de cabeçalho de seção das listas agrupadas do iOS (redesenho de
+ * 2026-08-23).
+ */
 function Bloco({ titulo, erro, onLayout, children }: BlocoProps) {
   return (
     <View style={styles.bloco} onLayout={onLayout}>
-      <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTexto} style={styles.blocoTitulo}>
+      <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.blocoTitulo}>
         {titulo}
       </TextoGrande>
       {children}
@@ -291,24 +296,7 @@ export function MedicationForm({ tituloBotaoSalvar, valoresIniciais, corSugerida
         </Bloco>
 
         <Bloco titulo={TEXTOS.cadastro.frequenciaPergunta}>
-          <View style={styles.frequenciaLista}>
-            {OPCOES_FREQUENCIA.map((opcao) => {
-              const marcado = frequencia === opcao.valor;
-              return (
-                <Pressable
-                  key={opcao.valor}
-                  onPress={() => selecionarFrequencia(opcao.valor)}
-                  accessibilityRole="radio"
-                  accessibilityState={{ checked: marcado }}
-                  style={[styles.frequenciaBotao, marcado && styles.frequenciaBotaoMarcado]}
-                >
-                  <TextoGrande token="corpo" cor={marcado ? '#FFFFFF' : CORES_SEMANTICAS.neutroTexto}>
-                    {opcao.rotulo}
-                  </TextoGrande>
-                </Pressable>
-              );
-            })}
-          </View>
+          <SeletorOpcao opcoes={OPCOES_FREQUENCIA} selecionados={[frequencia]} aoAlternar={selecionarFrequencia} />
         </Bloco>
 
         {frequencia === 'dias_semana' ? (
@@ -319,31 +307,42 @@ export function MedicationForm({ tituloBotaoSalvar, valoresIniciais, corSugerida
 
         {mostraHorarioELembrete ? (
           <Bloco titulo={TEXTOS.cadastro.horariosPergunta} erro={erros.horarios} onLayout={medir('horarios')}>
-            {horarios.map((hora, index) => (
-              <View key={hora} style={styles.horarioLinha}>
-                <Pressable
-                  onPress={() => abrirEditarHorario(index)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Horário ${hora}`}
-                  style={styles.horarioChip}
-                >
-                  <TextoGrande token="corpo">{hora}</TextoGrande>
-                </Pressable>
-                <Pressable
-                  onPress={() => removerHorario(index)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Remover horário ${hora}`}
-                  style={styles.horarioRemover}
-                >
-                  <Ionicons name="close-circle" size={32} color={CORES_SEMANTICAS.perigo} />
-                </Pressable>
-              </View>
-            ))}
-            <BotaoSecundario
-              texto={TEXTOS.cadastro.horariosAdicionar}
-              onPress={abrirNovoHorario}
-              desabilitado={horarios.length >= MAXIMO_HORARIOS}
-            />
+            <View style={styles.grupo}>
+              {horarios.map((hora, index) => (
+                <View key={hora} style={[styles.horarioLinha, styles.linhaComBorda]}>
+                  <Pressable
+                    onPress={() => abrirEditarHorario(index)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Horário ${hora}`}
+                    style={styles.horarioToque}
+                  >
+                    <Ionicons name="time-outline" size={22} color={CORES_SEMANTICAS.acao} />
+                    <TextoGrande token="corpo" style={styles.horarioTexto}>
+                      {hora}
+                    </TextoGrande>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => removerHorario(index)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Remover horário ${hora}`}
+                    style={styles.horarioRemover}
+                  >
+                    <Ionicons name="close-circle" size={26} color={CORES_SEMANTICAS.perigo} />
+                  </Pressable>
+                </View>
+              ))}
+              <Pressable
+                onPress={abrirNovoHorario}
+                disabled={horarios.length >= MAXIMO_HORARIOS}
+                accessibilityRole="button"
+                style={[styles.horarioLinha, horarios.length >= MAXIMO_HORARIOS && styles.linhaDesabilitada]}
+              >
+                <Ionicons name="add-circle" size={22} color={CORES_SEMANTICAS.acao} />
+                <TextoGrande token="corpo" cor={CORES_SEMANTICAS.acao} style={styles.horarioTexto}>
+                  {TEXTOS.cadastro.horariosAdicionar}
+                </TextoGrande>
+              </Pressable>
+            </View>
             {horarios.length >= MAXIMO_HORARIOS ? (
               <TextoGrande token="apoio" cor={CORES_SEMANTICAS.atencao} style={styles.avisoMaximo}>
                 {TEXTOS.cadastro.erroMaximoHorarios}
@@ -354,7 +353,7 @@ export function MedicationForm({ tituloBotaoSalvar, valoresIniciais, corSugerida
 
         {mostraHorarioELembrete ? (
           <Bloco titulo={TEXTOS.cadastro.lembretePergunta}>
-            <View style={styles.linhaSwitch}>
+            <View style={[styles.grupo, styles.linhaSwitch]}>
               <TextoGrande token="corpo">{lembreteAtivo ? TEXTOS.cadastro.lembreteSim : TEXTOS.cadastro.lembreteNao}</TextoGrande>
               <Switch value={lembreteAtivo} onValueChange={setLembreteAtivo} trackColor={{ true: CORES_SEMANTICAS.acao, false: undefined }} />
             </View>
@@ -445,42 +444,38 @@ const styles = StyleSheet.create({
   blocoErro: {
     marginTop: 8,
   },
-  frequenciaLista: {
-    gap: 12,
-  },
-  frequenciaBotao: {
-    minHeight: TOQUE_MINIMO,
-    borderRadius: RAIO.botao,
-    borderWidth: 2,
-    borderColor: CORES_SEMANTICAS.neutroBorda,
+  grupo: {
     backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
+    borderRadius: RAIO.card,
+    overflow: 'hidden',
   },
-  frequenciaBotaoMarcado: {
-    backgroundColor: CORES_SEMANTICAS.acao,
-    borderColor: CORES_SEMANTICAS.acao,
+  linhaComBorda: {
+    borderBottomWidth: 1,
+    borderBottomColor: CORES_SEMANTICAS.neutroBorda,
+  },
+  linhaDesabilitada: {
+    opacity: 0.4,
   },
   horarioLinha: {
+    minHeight: TOQUE_MINIMO,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  horarioToque: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginBottom: 12,
-  },
-  horarioChip: {
-    flex: 1,
     minHeight: TOQUE_MINIMO,
-    borderRadius: RAIO.botao,
-    borderWidth: 2,
-    borderColor: CORES_SEMANTICAS.neutroBorda,
-    backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  horarioTexto: {
+    flex: 1,
   },
   horarioRemover: {
-    width: TOQUE_MINIMO,
-    height: TOQUE_MINIMO,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -492,6 +487,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     minHeight: TOQUE_MINIMO,
+    paddingHorizontal: 16,
   },
   campoMultilinha: {
     minHeight: 90,

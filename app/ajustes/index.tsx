@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLiveQuery } from 'drizzle-orm/expo-sqlite';
 import { router } from 'expo-router';
-import type { ReactNode } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -84,42 +83,70 @@ export default function AjustesScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.conteudo}>
-        <Item titulo={TEXTOS.ajustes.tamanhoLetras}>
-          <View style={styles.escalaLinha}>
-            <BotaoEscala escala="grande" selecionada={escalaFonte === 'grande'} onPress={() => aoEscolherEscala('grande')} />
-            <BotaoEscala escala="gigante" selecionada={escalaFonte === 'gigante'} onPress={() => aoEscolherEscala('gigante')} />
-          </View>
-        </Item>
+        <SectionHeader texto={TEXTOS.ajustes.tamanhoLetras} />
+        <View style={[styles.grupo, styles.escalaGrupo]}>
+          <BotaoEscala escala="grande" selecionada={escalaFonte === 'grande'} onPress={() => aoEscolherEscala('grande')} />
+          <BotaoEscala escala="gigante" selecionada={escalaFonte === 'gigante'} onPress={() => aoEscolherEscala('gigante')} />
+        </View>
 
-        <Item titulo={TEXTOS.ajustes.somAviso}>
-          <View style={styles.linhaSwitch}>
+        <SectionHeader texto={TEXTOS.ajustes.somAviso} />
+        <View style={styles.grupo}>
+          <View style={styles.linha}>
+            <Ionicons name="volume-high-outline" size={22} color={CORES_SEMANTICAS.acao} />
+            <TextoGrande token="corpo" style={styles.linhaTextoFlex}>
+              {TEXTOS.ajustes.somAviso}
+            </TextoGrande>
             <Switch value={somLembrete} onValueChange={aoAlternarSom} trackColor={{ true: CORES_SEMANTICAS.acao, false: undefined }} />
           </View>
-        </Item>
+        </View>
 
-        <Pressable onPress={() => router.push('/ajustes/arquivados')} accessibilityRole="button" style={styles.linhaNavegacao}>
-          <TextoGrande token="corpo">{TEXTOS.ajustes.arquivados}</TextoGrande>
-          <Ionicons name="chevron-forward" size={24} color="#6B6B70" />
-        </Pressable>
+        <SectionHeader texto={TEXTOS.ajustes.tituloRemedios} />
+        <View style={styles.grupo}>
+          <Pressable
+            onPress={() => router.push('/ajustes/arquivados')}
+            accessibilityRole="button"
+            style={[styles.linha, styles.linhaComBorda]}
+          >
+            <Ionicons name="archive-outline" size={22} color={CORES_SEMANTICAS.acao} />
+            <TextoGrande token="corpo" style={styles.linhaTextoFlex}>
+              {TEXTOS.ajustes.arquivados}
+            </TextoGrande>
+            <Ionicons name="chevron-forward" size={20} color="#C7C7CC" />
+          </Pressable>
 
-        <Pressable
-          onPress={aoTocarCompartilhar}
-          disabled={remedios.length === 0}
-          accessibilityRole="button"
-          style={[styles.linhaNavegacao, remedios.length === 0 && styles.linhaDesabilitada]}
-        >
-          <TextoGrande token="corpo" cor={remedios.length === 0 ? '#8E8E93' : CORES_SEMANTICAS.neutroTexto}>
-            {remedios.length === 0 ? TEXTOS.home.botaoCompartilharDesabilitado : TEXTOS.home.botaoCompartilhar}
-          </TextoGrande>
-          <Ionicons name="share-outline" size={22} color={remedios.length === 0 ? '#8E8E93' : '#6B6B70'} />
-        </Pressable>
+          <Pressable
+            onPress={aoTocarCompartilhar}
+            disabled={remedios.length === 0}
+            accessibilityRole="button"
+            style={[styles.linha, remedios.length === 0 && styles.linhaDesabilitada]}
+          >
+            <Ionicons
+              name="share-outline"
+              size={22}
+              color={remedios.length === 0 ? CORES_SEMANTICAS.neutroTextoSecundario : CORES_SEMANTICAS.acao}
+            />
+            <TextoGrande
+              token="corpo"
+              cor={remedios.length === 0 ? CORES_SEMANTICAS.neutroTextoSecundario : CORES_SEMANTICAS.neutroTexto}
+              style={styles.linhaTextoFlex}
+            >
+              {remedios.length === 0 ? TEXTOS.home.botaoCompartilharDesabilitado : TEXTOS.home.botaoCompartilhar}
+            </TextoGrande>
+          </Pressable>
+        </View>
 
-        <Pressable onPress={() => router.push('/ajustes/sobre')} accessibilityRole="button" style={styles.linhaNavegacao}>
-          <TextoGrande token="corpo">{TEXTOS.ajustes.sobre}</TextoGrande>
-          <Ionicons name="chevron-forward" size={24} color="#6B6B70" />
-        </Pressable>
+        <SectionHeader texto={TEXTOS.ajustes.tituloSobre} />
+        <View style={styles.grupo}>
+          <Pressable onPress={() => router.push('/ajustes/sobre')} accessibilityRole="button" style={styles.linha}>
+            <Ionicons name="information-circle-outline" size={22} color={CORES_SEMANTICAS.acao} />
+            <TextoGrande token="corpo" style={styles.linhaTextoFlex}>
+              {TEXTOS.ajustes.sobre}
+            </TextoGrande>
+            <Ionicons name="chevron-forward" size={20} color="#C7C7CC" />
+          </Pressable>
+        </View>
 
-        <View style={styles.apagarWrapper}>
+        <View style={[styles.grupo, styles.apagarGrupo]}>
           <BotaoDestrutivo texto={TEXTOS.ajustes.apagarTudo} onPress={aoTocarApagarTudo} />
         </View>
       </ScrollView>
@@ -149,14 +176,11 @@ function BotaoEscala({ escala, selecionada, onPress }: { escala: EscalaFonte; se
   );
 }
 
-function Item({ titulo, children }: { titulo: string; children: ReactNode }) {
+function SectionHeader({ texto }: { texto: string }) {
   return (
-    <View style={styles.item}>
-      <TextoGrande token="corpo" style={styles.itemTitulo}>
-        {titulo}
-      </TextoGrande>
-      {children}
-    </View>
+    <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.sectionHeader}>
+      {texto.toUpperCase()}
+    </TextoGrande>
   );
 }
 
@@ -183,22 +207,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: ESPACAMENTO.margemLateralTela,
     paddingBottom: 48,
   },
-  item: {
-    marginBottom: 28,
+  sectionHeader: {
+    marginTop: 24,
+    marginBottom: 8,
+    marginLeft: 4,
   },
-  itemTitulo: {
-    marginBottom: 12,
+  grupo: {
+    backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
+    borderRadius: RAIO.card,
+    overflow: 'hidden',
   },
-  escalaLinha: {
+  escalaGrupo: {
     flexDirection: 'row',
     gap: 12,
+    backgroundColor: 'transparent',
+    padding: 0,
   },
   botaoEscala: {
     flex: 1,
     minHeight: TOQUE_MINIMO,
-    borderRadius: RAIO.botao,
-    borderWidth: 2,
-    borderColor: CORES_SEMANTICAS.neutroBorda,
+    borderRadius: RAIO.card,
     backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
     alignItems: 'center',
     justifyContent: 'center',
@@ -206,32 +234,31 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   botaoEscalaMarcado: {
+    borderWidth: 2,
     borderColor: CORES_SEMANTICAS.acao,
-    backgroundColor: '#E6F5EC',
   },
   escalaExemplo: {
     color: CORES_SEMANTICAS.neutroTexto,
   },
-  linhaSwitch: {
+  linha: {
     flexDirection: 'row',
     alignItems: 'center',
     minHeight: TOQUE_MINIMO,
-    alignSelf: 'flex-start',
+    paddingHorizontal: 16,
+    gap: 12,
   },
-  linhaNavegacao: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: TOQUE_MINIMO,
-    paddingVertical: 8,
-    marginBottom: 12,
+  linhaTextoFlex: {
+    flex: 1,
+  },
+  linhaComBorda: {
     borderBottomWidth: 1,
     borderBottomColor: CORES_SEMANTICAS.neutroBorda,
   },
   linhaDesabilitada: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
-  apagarWrapper: {
-    marginTop: 24,
+  apagarGrupo: {
+    marginTop: 32,
+    backgroundColor: 'transparent',
   },
 });

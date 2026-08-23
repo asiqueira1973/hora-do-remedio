@@ -41,20 +41,15 @@ export function CampoTexto({ rotulo, exemplo, erro, style, ...rest }: CampoTexto
       ) : null}
       <TextInput
         {...rest}
-        style={[
-          styles.campo,
-          estiloTexto,
-          { borderColor: erro ? CORES_SEMANTICAS.perigo : CORES_SEMANTICAS.neutroBorda },
-          style,
-        ]}
-        placeholderTextColor="#8A8A8E"
+        style={[styles.campo, estiloTexto, erro && styles.campoComErro, style]}
+        placeholderTextColor="#B9B9BE"
       />
       {erro ? (
         <TextoGrande token="apoio" cor={CORES_SEMANTICAS.perigo} style={styles.mensagem}>
           {erro}
         </TextoGrande>
       ) : exemplo ? (
-        <TextoGrande token="apoio" cor="#6B6B70" style={styles.mensagem}>
+        <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.mensagem}>
           {exemplo}
         </TextoGrande>
       ) : null}
@@ -68,12 +63,15 @@ const styles = StyleSheet.create({
   },
   campo: {
     minHeight: TOQUE_MINIMO,
-    borderWidth: 2,
-    borderRadius: RAIO.botao,
+    borderRadius: RAIO.card,
     backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     color: CORES_SEMANTICAS.neutroTexto,
+  },
+  campoComErro: {
+    borderWidth: 2,
+    borderColor: CORES_SEMANTICAS.perigo,
   },
   mensagem: {
     marginTop: 8,

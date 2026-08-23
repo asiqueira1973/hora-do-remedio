@@ -1,4 +1,3 @@
-import { useFonts } from 'expo-font';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import * as SplashScreen from 'expo-splash-screen';
@@ -36,8 +35,9 @@ Notifications.setNotificationHandler({
 const LIMIAR_RECONCILIACAO_MS = 60 * 60 * 1000;
 
 /**
- * Layout raiz do app: carrega a Nunito, inicializa o banco (migrations +
- * seed) e só libera a splash quando os dois terminarem.
+ * Layout raiz do app: inicializa o banco (migrations + seed) e só libera
+ * a splash quando terminar. Não há fonte própria para carregar — o app
+ * usa a fonte do sistema (San Francisco no iOS, redesenho de 2026-08-23).
  *
  * Recebe: nada (é o root do Expo Router).
  * Devolve: a árvore de rotas dentro do `PreferencesProvider`, ou a tela de
@@ -48,12 +48,6 @@ const LIMIAR_RECONCILIACAO_MS = 60 * 60 * 1000;
  * só então libera a splash."
  */
 export default function RootLayout() {
-  const [fontesCarregadas, erroFontes] = useFonts({
-    'Nunito-SemiBold': require('../assets/fonts/Nunito-SemiBold.ttf'),
-    'Nunito-Bold': require('../assets/fonts/Nunito-Bold.ttf'),
-    'Nunito-ExtraBold': require('../assets/fonts/Nunito-ExtraBold.ttf'),
-  });
-
   const [estadoBanco, setEstadoBanco] = useState<'carregando' | 'pronto' | 'erro'>('carregando');
   const ultimaVezAtivoRef = useRef<number>(Date.now());
 
@@ -75,10 +69,10 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (fontesCarregadas && estadoBanco !== 'carregando') {
+    if (estadoBanco !== 'carregando') {
       SplashScreen.hideAsync();
     }
-  }, [fontesCarregadas, estadoBanco]);
+  }, [estadoBanco]);
 
   // Reconciliação (11.5): roda na abertura do app, depois da migration, sem
   // travar a interface (por isso não é `await`ada aqui), e de novo sempre
@@ -100,10 +94,6 @@ export default function RootLayout() {
 
     return () => assinatura.remove();
   }, [estadoBanco]);
-
-  if (!fontesCarregadas && !erroFontes) {
-    return null;
-  }
 
   if (estadoBanco === 'carregando') {
     return null;

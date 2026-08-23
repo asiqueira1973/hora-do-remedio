@@ -22,13 +22,12 @@
     "plugins": [
       "expo-router",
       "expo-sqlite",
-      "expo-font",
       "expo-localization",
       "expo-notifications",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F5F5F7",
+          "backgroundColor": "#F2F2F7",
           "image": "./assets/icon.png",
           "imageWidth": 160
         }

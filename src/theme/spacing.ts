@@ -5,8 +5,8 @@
  * aprovação (16.8).
  */
 export const RAIO = {
-  card: 20,
-  botao: 16,
+  card: 14,
+  botao: 14,
 };
 
 /** Área tocável mínima do app inteiro: 60×60pt (princípio 0.2). */
@@ -23,11 +23,16 @@ export const ESPACAMENTO = {
   paddingCard: 20,
 };
 
-/** Sombra sutil e única do app (16.5): y:2, blur:8, opacidade 0.08. */
+/**
+ * Sombra sutil e única do app (16.5): y:1, blur:3, opacidade 0.06 —
+ * ajustada no redesenho de 2026-08-23 para o padrão de "grouped list" da
+ * Apple, onde superfícies quase não têm sombra (o hairline entre linhas
+ * já separa o conteúdo).
+ */
 export const SOMBRA = {
   shadowColor: '#000000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.08,
-  shadowRadius: 8,
-  elevation: 3,
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.06,
+  shadowRadius: 3,
+  elevation: 1,
 };

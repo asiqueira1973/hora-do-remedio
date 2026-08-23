@@ -29,7 +29,7 @@ export default function OnboardingTela1() {
         <TextoGrande token="display" style={styles.texto}>
           {TEXTOS.onboarding.tela1Titulo}
         </TextoGrande>
-        <TextoGrande token="corpo" cor="#6B6B70" style={styles.texto}>
+        <TextoGrande token="corpo" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.texto}>
           {TEXTOS.onboarding.tela1Texto}
         </TextoGrande>
       </View>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 140,
     borderRadius: 70,
-    backgroundColor: '#E6F5EC',
+    backgroundColor: '#E5F1FF',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,

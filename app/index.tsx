@@ -15,7 +15,7 @@ import { calcularCustoDeAgendamento, COTA_NOTIFICACOES_IOS } from '../src/featur
 import { usePermissaoNotificacao } from '../src/features/reminders/usePermissaoNotificacao';
 import { remedioParaDominio, repositorioRemedios } from '../src/repositories/medications';
 import { CORES_SEMANTICAS } from '../src/theme/colors';
-import { ALTURAS, ESPACAMENTO, SOMBRA, TOQUE_MINIMO } from '../src/theme/spacing';
+import { ALTURAS, ESPACAMENTO, RAIO, SOMBRA, TOQUE_MINIMO } from '../src/theme/spacing';
 import type { RemedioComHorarios } from '../src/types/domain';
 
 const DIAS_SEMANA_EXTENSO = [
@@ -112,7 +112,7 @@ export default function Home() {
             <Ionicons name="settings-outline" size={28} color={CORES_SEMANTICAS.neutroTexto} />
           </Pressable>
         </View>
-        <TextoGrande token="apoio" cor="#6B6B70" style={styles.data}>
+        <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.data}>
           {formatarDataPorExtenso(agora)}
         </TextoGrande>
         <Pressable
@@ -125,10 +125,10 @@ export default function Home() {
           <Ionicons
             name="share-outline"
             size={22}
-            color={remedios.length === 0 ? '#8E8E93' : CORES_SEMANTICAS.acao}
+            color={remedios.length === 0 ? CORES_SEMANTICAS.neutroTextoSecundario : CORES_SEMANTICAS.acao}
             style={styles.botaoCompartilharIcone}
           />
-          <TextoGrande token="corpo" cor={remedios.length === 0 ? '#8E8E93' : CORES_SEMANTICAS.acao}>
+          <TextoGrande token="corpo" cor={remedios.length === 0 ? CORES_SEMANTICAS.neutroTextoSecundario : CORES_SEMANTICAS.acao}>
             {remedios.length === 0 ? TEXTOS.home.botaoCompartilharDesabilitado : TEXTOS.home.botaoCompartilhar}
           </TextoGrande>
         </Pressable>
@@ -158,7 +158,7 @@ export default function Home() {
           <TextoGrande token="titulo" style={styles.vazioTexto}>
             {TEXTOS.home.vazioTitulo}
           </TextoGrande>
-          <TextoGrande token="corpo" cor="#6B6B70" style={styles.vazioTexto}>
+          <TextoGrande token="corpo" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.vazioTexto}>
             {TEXTOS.home.vazioTexto}
           </TextoGrande>
         </View>
@@ -168,8 +168,8 @@ export default function Home() {
           keyExtractor={(item, index) => `${item.id}-${index}`}
           contentContainerStyle={styles.lista}
           renderSectionHeader={({ section }) => (
-            <TextoGrande token="apoio" cor="#6B6B70" style={styles.cabecalhoGrupo}>
-              {section.titulo}
+            <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.cabecalhoGrupo}>
+              {section.titulo.toUpperCase()}
             </TextoGrande>
           )}
           renderItem={({ item }) => (
@@ -180,14 +180,14 @@ export default function Home() {
         />
       )}
 
-      <View style={styles.fabWrapper}>
+      <View style={styles.ctaWrapper}>
         <Pressable
           onPress={() => router.push('/remedio/novo')}
           accessibilityRole="button"
           accessibilityLabel={TEXTOS.home.botaoAdicionar}
-          style={({ pressed }) => [styles.fab, pressed && styles.fabPressionado]}
+          style={({ pressed }) => [styles.cta, pressed && styles.ctaPressionado]}
         >
-          <Ionicons name="add-circle" size={28} color="#FFFFFF" style={styles.fabIcone} />
+          <Ionicons name="add" size={26} color="#FFFFFF" style={styles.ctaIcone} />
           <TextoGrande token="botao" cor="#FFFFFF">
             {TEXTOS.home.botaoAdicionar}
           </TextoGrande>
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: '#E6F5EC',
+    backgroundColor: '#E5F1FF',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
@@ -295,27 +295,26 @@ const styles = StyleSheet.create({
   vazioTexto: {
     textAlign: 'center',
   },
-  fabWrapper: {
+  ctaWrapper: {
     position: 'absolute',
+    left: ESPACAMENTO.margemLateralTela,
     right: ESPACAMENTO.margemLateralTela,
     bottom: 24,
   },
-  fab: {
+  cta: {
     flexDirection: 'row',
-    minHeight: ALTURAS.fab,
-    minWidth: TOQUE_MINIMO,
-    paddingHorizontal: 24,
+    height: ALTURAS.fab,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: ALTURAS.fab / 2,
+    borderRadius: RAIO.card,
     backgroundColor: CORES_SEMANTICAS.acao,
     ...SOMBRA,
   },
-  fabPressionado: {
+  ctaPressionado: {
     opacity: 0.9,
   },
-  fabIcone: {
-    marginRight: 8,
+  ctaIcone: {
+    marginRight: 6,
   },
   faixa: {
     position: 'absolute',

@@ -31,13 +31,18 @@ export const ORDEM_RODIZIO_CORES: Cor[] = ['coral', 'azul', 'verde', 'amarelo', 
  * Cores semânticas (16.4) — reservadas, nunca entram na paleta de cards.
  * Cada uma tem um significado exclusivo: `acao` é sempre confirmação/
  * sucesso, `perigo` é sempre destrutivo, etc.
+ *
+ * Redesenho para o padrão visual nativo do iOS (azul de sistema no lugar
+ * do verde, cinzas de "grouped list" da Apple) — decisão de 2026-08-23,
+ * aprovada a partir dos mockups gerados nesta sessão.
  */
 export const CORES_SEMANTICAS = {
-  acao: '#1E9E5A',
-  perigo: '#D93025',
-  atencao: '#B25E00',
+  acao: '#007AFF',
+  perigo: '#FF3B30',
+  atencao: '#FF9500',
   neutroTexto: '#1C1C1E',
-  neutroFundo: '#F5F5F7',
+  neutroTextoSecundario: '#6E6E73',
+  neutroFundo: '#F2F2F7',
   neutroSuperficie: '#FFFFFF',
-  neutroBorda: '#D6D6DB',
+  neutroBorda: '#E5E5EA',
 } as const;

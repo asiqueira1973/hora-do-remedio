@@ -2,8 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { TextoGrande } from '../../components/TextoGrande';
-import { PALETA_REMEDIOS } from '../../theme/colors';
-import { ESPACAMENTO, RAIO } from '../../theme/spacing';
+import { CORES_SEMANTICAS, PALETA_REMEDIOS } from '../../theme/colors';
+import { RAIO } from '../../theme/spacing';
 import type { RemedioComHorarios } from '../../types/domain';
 import { TEXTOS } from '../../constants/textos';
 import { FORMA_ICONE } from './formaIcone';
@@ -15,13 +15,16 @@ interface MedicationCardProps {
 }
 
 /**
- * Card de remédio da Home (8.1): nome, dose, ícone da forma, observação e
- * indicador de aviso, sobre o fundo na cor do remédio.
+ * Linha de remédio da Home (8.1): nome, dose, ícone da forma, observação e
+ * indicador de aviso, dentro de uma lista agrupada nativa — fundo branco,
+ * um círculo colorido de identificação à esquerda (a cor do remédio vira
+ * o círculo, não mais o fundo inteiro do cartão) e um chevron à direita.
+ * Redesenho de 2026-08-23.
  *
- * Recebe: o remédio (com horários, mas o card não lista horário — o
+ * Recebe: o remédio (com horários, mas a linha não lista horário — o
  * agrupamento já mostra isso no cabeçalho do grupo) e o callback de toque
  * para abrir o detalhe (8.3).
- * Devolve: o card tocável.
+ * Devolve: a linha tocável.
  *
  * Implementa a tabela "Conteúdo do card" da 8.1: dose e observação
  * omitidas quando nulas (sem linha vazia, sem traço), frequência só
@@ -39,79 +42,89 @@ export function MedicationCard({ remedio, onPress }: MedicationCardProps) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={rotuloAcessivel}
-      style={({ pressed }) => [styles.card, { backgroundColor: paleta.fundo }, pressed && styles.pressionado]}
+      style={({ pressed }) => [styles.linha, pressed && styles.pressionado]}
     >
-      <View style={styles.iconeCirculo}>
-        <Ionicons name={FORMA_ICONE[remedio.forma]} size={30} color={paleta.detalhe} />
+      <View style={[styles.iconeCirculo, { backgroundColor: paleta.fundo }]}>
+        <Ionicons name={FORMA_ICONE[remedio.forma]} size={24} color={paleta.detalhe} />
       </View>
 
       <View style={styles.conteudo}>
-        <TextoGrande token="titulo" cor={paleta.texto}>
+        <TextoGrande token="titulo" cor={CORES_SEMANTICAS.neutroTexto}>
           {remedio.nome}
         </TextoGrande>
 
         {remedio.dose ? (
-          <TextoGrande token="corpo" cor={paleta.texto} style={styles.linha}>
+          <TextoGrande token="corpo" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.linhaTexto}>
             {remedio.dose}
           </TextoGrande>
         ) : null}
 
         {remedio.observacao ? (
-          <TextoGrande token="corpo" cor={paleta.texto} style={styles.linha}>
-            ⚠️ {remedio.observacao}
-          </TextoGrande>
+          <View style={styles.linhaComIcone}>
+            <Ionicons name="alert-circle-outline" size={17} color={CORES_SEMANTICAS.atencao} />
+            <TextoGrande token="apoio" cor={CORES_SEMANTICAS.atencao} style={styles.linhaComIconeTexto}>
+              {remedio.observacao}
+            </TextoGrande>
+          </View>
         ) : null}
 
         {frequenciaTexto ? (
-          <TextoGrande token="apoio" cor={paleta.texto} style={styles.linha}>
-            {frequenciaTexto}
-          </TextoGrande>
+          <View style={styles.linhaComIcone}>
+            <Ionicons name="calendar-outline" size={17} color={CORES_SEMANTICAS.neutroTextoSecundario} />
+            <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.linhaComIconeTexto}>
+              {frequenciaTexto}
+            </TextoGrande>
+          </View>
         ) : null}
 
         {mostraSemAviso ? (
-          <View style={styles.semAvisoLinha}>
-            <Ionicons name="notifications-off-outline" size={20} color={paleta.texto} />
-            <TextoGrande token="apoio" cor={paleta.texto} style={styles.semAvisoTexto}>
+          <View style={styles.linhaComIcone}>
+            <Ionicons name="notifications-off-outline" size={17} color={CORES_SEMANTICAS.neutroTextoSecundario} />
+            <TextoGrande token="apoio" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.linhaComIconeTexto}>
               {TEXTOS.home.semAviso}
             </TextoGrande>
           </View>
         ) : null}
       </View>
+
+      <Ionicons name="chevron-forward" size={20} color="#C7C7CC" />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
+  linha: {
     flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
     borderRadius: RAIO.card,
-    padding: ESPACAMENTO.paddingCard,
-    gap: 16,
+    padding: 14,
+    gap: 14,
   },
   pressionado: {
-    opacity: 0.85,
+    opacity: 0.6,
   },
   iconeCirculo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#FFFFFF',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   conteudo: {
     flex: 1,
   },
-  linha: {
-    marginTop: 6,
+  linhaTexto: {
+    marginTop: 2,
   },
-  semAvisoLinha: {
+  linhaComIcone: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
-    gap: 6,
+    marginTop: 4,
+    gap: 5,
   },
-  semAvisoTexto: {
+  linhaComIconeTexto: {
     marginTop: 0,
   },
 });

@@ -10,8 +10,9 @@ interface TextoGrandeProps extends TextProps {
 }
 
 /**
- * Texto padrão do app: sempre usa a Nunito e um dos 5 tokens tipográficos
- * (16.2), na escala de fonte ativa do usuário (`preferencias.escala_fonte`).
+ * Texto padrão do app: sempre usa a fonte do sistema (San Francisco no
+ * iOS) e um dos 5 tokens tipográficos (16.2), na escala de fonte ativa do
+ * usuário (`preferencias.escala_fonte`).
  *
  * Recebe: `token` (default `'corpo'`), `cor` (default `neutro_texto`, 16.4)
  * e as props normais de `Text`.

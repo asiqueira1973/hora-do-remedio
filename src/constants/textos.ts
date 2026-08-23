@@ -78,6 +78,11 @@ export const TEXTOS = {
     // Rótulos dos botões do alerta acima — a 15.5 não especifica.
     mudarParaQuandoPrecisarCancelar: 'Cancelar',
     mudarParaQuandoPrecisarConfirmar: 'Continuar',
+    // Cabeçalhos de seção da tela de detalhe (redesenho de 2026-08-23,
+    // listas agrupadas nativas) — não especificados na 15.5.
+    tituloDetalhes: 'Detalhes',
+    tituloAcoes: 'Ações',
+    avisosLigados: 'Avisos ligados',
   },
   permissao: {
     titulo: 'Para avisar na hora do remédio, o app precisa da sua permissão',
@@ -92,6 +97,10 @@ export const TEXTOS = {
     tamanhoGigante: 'Gigante',
     tamanhoExemplo: 'Losartana',
     somAviso: 'Som do aviso',
+    // Cabeçalhos de seção da tela (redesenho de 2026-08-23, listas
+    // agrupadas nativas) — não especificados na 15.5.
+    tituloRemedios: 'Remédios',
+    tituloSobre: 'Sobre',
     arquivados: 'Remédios que parei',
     sobre: 'Sobre o app',
     apagarTudo: 'Apagar todos os meus dados',

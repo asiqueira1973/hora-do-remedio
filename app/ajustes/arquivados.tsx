@@ -45,7 +45,7 @@ export default function ArquivadosScreen() {
 
       {remedios.length === 0 ? (
         <View style={styles.vazio}>
-          <TextoGrande token="corpo" cor="#6B6B70" style={styles.vazioTexto}>
+          <TextoGrande token="corpo" cor={CORES_SEMANTICAS.neutroTextoSecundario} style={styles.vazioTexto}>
             {TEXTOS.arquivados.vazio}
           </TextoGrande>
         </View>
@@ -65,17 +65,17 @@ function ItemArquivado({ remedio }: { remedio: RemedioComHorarios }) {
   const paleta = PALETA_REMEDIOS[remedio.cor];
 
   return (
-    <View style={[styles.item, { backgroundColor: paleta.fundo }]}>
+    <View style={styles.item}>
       <View style={styles.itemLinha}>
-        <View style={styles.itemIcone}>
-          <Ionicons name={FORMA_ICONE[remedio.forma]} size={28} color={paleta.detalhe} />
+        <View style={[styles.itemIcone, { backgroundColor: paleta.fundo }]}>
+          <Ionicons name={FORMA_ICONE[remedio.forma]} size={24} color={paleta.detalhe} />
         </View>
         <View style={styles.itemTexto}>
-          <TextoGrande token="titulo" cor={paleta.texto}>
+          <TextoGrande token="titulo" cor={CORES_SEMANTICAS.neutroTexto}>
             {remedio.nome}
           </TextoGrande>
           {remedio.dose ? (
-            <TextoGrande token="corpo" cor={paleta.texto}>
+            <TextoGrande token="corpo" cor={CORES_SEMANTICAS.neutroTextoSecundario}>
               {remedio.dose}
             </TextoGrande>
           ) : null}
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   item: {
+    backgroundColor: CORES_SEMANTICAS.neutroSuperficie,
     borderRadius: RAIO.card,
     padding: ESPACAMENTO.paddingCard,
     marginBottom: ESPACAMENTO.entreCards,
@@ -138,15 +139,15 @@ const styles = StyleSheet.create({
   itemLinha: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 14,
   },
   itemIcone: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    backgroundColor: '#FFFFFF',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   itemTexto: {
     flex: 1,
