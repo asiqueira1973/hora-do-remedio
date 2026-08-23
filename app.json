@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hora do Remédio",
     "slug": "hora-do-remedio",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "scheme": "horadoremedio",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -17,7 +17,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       },
-      "buildNumber": "3"
+      "buildNumber": "4"
     },
     "plugins": [
       "expo-router",
