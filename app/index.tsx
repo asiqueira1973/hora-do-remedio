@@ -187,7 +187,6 @@ export default function Home() {
           accessibilityLabel={TEXTOS.home.botaoAdicionar}
           style={({ pressed }) => [styles.cta, pressed && styles.ctaPressionado]}
         >
-          <Ionicons name="add" size={26} color="#FFFFFF" style={styles.ctaIcone} />
           <TextoGrande token="botao" cor="#FFFFFF">
             {TEXTOS.home.botaoAdicionar}
           </TextoGrande>
@@ -312,9 +311,6 @@ const styles = StyleSheet.create({
   },
   ctaPressionado: {
     opacity: 0.9,
-  },
-  ctaIcone: {
-    marginRight: 6,
   },
   faixa: {
     position: 'absolute',
