@@ -18,7 +18,7 @@ export const TEXTOS = {
     saudacaoTarde: 'Boa tarde',
     saudacaoNoite: 'Boa noite',
     vazioTitulo: 'Você ainda não cadastrou nenhum remédio',
-    vazioTexto: 'Toque no botão verde para cadastrar o primeiro',
+    vazioTexto: 'Toque no botão azul para cadastrar o primeiro',
     botaoAdicionar: '+ Adicionar remédio',
     botaoCompartilhar: 'Compartilhar minha lista',
     botaoCompartilharDesabilitado: 'Cadastre um remédio primeiro',
