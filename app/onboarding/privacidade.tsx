@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BotaoPrimario } from '../../src/components/BotaoPrimario';
 import { TextoGrande } from '../../src/components/TextoGrande';
 import { TEXTOS } from '../../src/constants/textos';
-import { registrar } from '../../src/features/analytics/analytics';
 import { repositorioPreferencias } from '../../src/repositories/preferences';
 import { CORES_SEMANTICAS } from '../../src/theme/colors';
 import { ESPACAMENTO } from '../../src/theme/spacing';
@@ -24,7 +23,6 @@ import { ESPACAMENTO } from '../../src/theme/spacing';
 export default function OnboardingTela2() {
   async function aoTocarComecar() {
     await repositorioPreferencias.concluirOnboarding();
-    registrar('onboarding_concluido', { tela: 'Onboarding' });
     router.replace('/');
   }
 

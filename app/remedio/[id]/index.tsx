@@ -6,7 +6,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TextoGrande } from '../../../src/components/TextoGrande';
 import { TEXTOS } from '../../../src/constants/textos';
-import { registrar } from '../../../src/features/analytics/analytics';
 import { FORMA_ICONE } from '../../../src/features/medications/formaIcone';
 import { formatarFrequencia } from '../../../src/features/medications/formatarFrequencia';
 import { useArchiveBanner } from '../../../src/features/medications/ArchiveBannerContext';
@@ -54,7 +53,6 @@ export default function DetalheRemedioScreen() {
         style: 'destructive',
         onPress: async () => {
           await repositorioRemedios.arquivar(remedio.id);
-          registrar('remedio_arquivado', { tela: 'DetalheRemedio' });
           await reconciliar();
           mostrarBanner({ remedioId: remedio.id, nome: remedio.nome });
           router.replace('/');

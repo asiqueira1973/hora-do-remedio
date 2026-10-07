@@ -6,7 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { TextoGrande } from '../../src/components/TextoGrande';
 import { TEXTOS } from '../../src/constants/textos';
-import { registrar } from '../../src/features/analytics/analytics';
 import { FORMA_ICONE } from '../../src/features/medications/formaIcone';
 import { reconciliar } from '../../src/features/reminders/reconciliadorLembretes';
 import { remedioParaDominio, repositorioRemedios } from '../../src/repositories/medications';
@@ -85,7 +84,6 @@ function ItemArquivado({ remedio }: { remedio: RemedioComHorarios }) {
       <Pressable
         onPress={async () => {
           await repositorioRemedios.desarquivar(remedio.id);
-          registrar('remedio_reativado', { tela: 'RemediosArquivados' });
           await reconciliar();
         }}
         accessibilityRole="button"

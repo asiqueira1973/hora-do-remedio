@@ -4,7 +4,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 
 import { TEXTOS } from '../../../src/constants/textos';
-import { registrar } from '../../../src/features/analytics/analytics';
 import { MedicationForm } from '../../../src/features/medications/MedicationForm';
 import type { FrequenciaFormulario } from '../../../src/features/medications/validarFormulario';
 import { reconciliar } from '../../../src/features/reminders/reconciliadorLembretes';
@@ -42,7 +41,6 @@ export default function EditarRemedioScreen() {
 
   async function aoSalvar(dados: NovoRemedio) {
     await repositorioRemedios.atualizar(remedioId, dados);
-    registrar('remedio_editado', { tela: 'EdicaoRemedio', propriedades: { frequencia: dados.frequencia, lembreteAtivo: dados.lembreteAtivo } });
 
     if (dados.lembreteAtivo) {
       const estadoPermissao = await servicoLembretes.verificarPermissao();
