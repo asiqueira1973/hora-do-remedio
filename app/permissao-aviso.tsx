@@ -6,6 +6,7 @@ import { BotaoPrimario } from '../src/components/BotaoPrimario';
 import { BotaoSecundario } from '../src/components/BotaoSecundario';
 import { TextoGrande } from '../src/components/TextoGrande';
 import { TEXTOS } from '../src/constants/textos';
+import { registrar } from '../src/features/analytics/analytics';
 import { reconciliar } from '../src/features/reminders/reconciliadorLembretes';
 import { servicoLembretes } from '../src/features/reminders/servicoLembretes';
 import { CORES_SEMANTICAS } from '../src/theme/colors';
@@ -28,12 +29,14 @@ import { ESPACAMENTO } from '../src/theme/spacing';
  */
 export default function PermissaoAvisoScreen() {
   async function aoContinuar() {
-    await servicoLembretes.pedirPermissao();
+    const resultado = await servicoLembretes.pedirPermissao();
+    registrar('permissao_notificacao_respondida', { tela: 'PermissaoAviso', propriedades: { resultado } });
     await reconciliar();
     router.replace('/');
   }
 
   async function aoTocarAgoraNao() {
+    registrar('permissao_notificacao_respondida', { tela: 'PermissaoAviso', propriedades: { resultado: 'pulado' } });
     await reconciliar();
     router.replace('/');
   }

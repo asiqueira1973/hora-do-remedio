@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BotaoDestrutivo } from '../../src/components/BotaoDestrutivo';
 import { TextoGrande } from '../../src/components/TextoGrande';
 import { TEXTOS } from '../../src/constants/textos';
+import { registrar } from '../../src/features/analytics/analytics';
 import { compartilhar, gerarTexto } from '../../src/features/export/exportadorLista';
 import { reconciliar } from '../../src/features/reminders/reconciliadorLembretes';
 import { servicoLembretes } from '../../src/features/reminders/servicoLembretes';
@@ -33,14 +34,17 @@ export default function AjustesScreen() {
 
   async function aoEscolherEscala(escala: EscalaFonte) {
     await repositorioPreferencias.atualizarEscalaFonte(escala);
+    registrar('escala_fonte_alterada', { tela: 'Ajustes', propriedades: { escala } });
   }
 
   async function aoAlternarSom(ligado: boolean) {
     await repositorioPreferencias.atualizarSomLembrete(ligado);
+    registrar('som_aviso_alterado', { tela: 'Ajustes', propriedades: { ligado } });
     await reconciliar();
   }
 
   function aoTocarCompartilhar() {
+    registrar('lista_compartilhada', { tela: 'Ajustes', propriedades: { quantidadeRemedios: remedios.length } });
     compartilhar(gerarTexto(remedios));
   }
 
@@ -59,6 +63,7 @@ export default function AjustesScreen() {
               onPress: async () => {
                 await servicoLembretes.cancelarTudo();
                 await repositorioPreferencias.apagarTudo();
+                registrar('todos_dados_apagados', { tela: 'Ajustes' });
                 router.replace('/');
               },
             },

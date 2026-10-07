@@ -7,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { BotaoPrimario } from '../src/components/BotaoPrimario';
 import { TextoGrande } from '../src/components/TextoGrande';
+import { registrar } from '../src/features/analytics/analytics';
 import { inicializarBanco } from '../src/db/client';
 import { ArchiveBannerProvider } from '../src/features/medications/ArchiveBannerContext';
 import { reconciliar } from '../src/features/reminders/reconciliadorLembretes';
@@ -81,6 +82,7 @@ export default function RootLayout() {
     if (estadoBanco !== 'pronto') return;
 
     reconciliar().catch((erro) => console.error('[reconciliação] falha na abertura', erro));
+    registrar('app_aberto');
     ultimaVezAtivoRef.current = Date.now();
 
     const assinatura = AppState.addEventListener('change', (proximoEstado: AppStateStatus) => {

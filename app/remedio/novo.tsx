@@ -3,6 +3,7 @@ import { useRouter } from 'expo-router';
 import { useMemo } from 'react';
 
 import { TEXTOS } from '../../src/constants/textos';
+import { registrar } from '../../src/features/analytics/analytics';
 import { MedicationForm } from '../../src/features/medications/MedicationForm';
 import { reconciliar } from '../../src/features/reminders/reconciliadorLembretes';
 import { servicoLembretes } from '../../src/features/reminders/servicoLembretes';
@@ -26,6 +27,10 @@ export default function NovoRemedioScreen() {
 
   async function aoSalvar(dados: NovoRemedio) {
     await repositorioRemedios.criar(dados);
+    registrar('remedio_cadastrado', {
+      tela: 'CadastroRemedio',
+      propriedades: { frequencia: dados.frequencia, lembreteAtivo: dados.lembreteAtivo, quantidadeHorarios: dados.horarios.length },
+    });
 
     if (dados.lembreteAtivo) {
       const estadoPermissao = await servicoLembretes.verificarPermissao();
