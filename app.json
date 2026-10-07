@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hora do Remédio",
     "slug": "hora-do-remedio",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "scheme": "horadoremedio",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
